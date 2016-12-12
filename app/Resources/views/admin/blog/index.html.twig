@@ -1,0 +1,53 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block content %}
+    {#<h1>Articles</h1>#}
+    {#<ul>#}
+    {#{% for article in articles %}#}
+        {#<li>#}
+            {#<ul>#}
+                {#<li>Id: {{ article.getId() }}</li>#}
+                {#<li>Name: {{ article.getName() }}</li>#}
+                {#<li>Perex: {{ article.getPerex()|raw }}</li>#}
+                {#<li>Text: {{ article.getText()|raw }}#}
+                {#<li><a href="{{ path('admin_blog_edit_article', {'article_id' : article.getId()}) }}">Edit</a><br /><br /></li>#}
+            {#</ul>#}
+        {#</li>#}
+    {#{% endfor %}#}
+    {#</ul>#}
+    {#<a href="{{ path('admin_blog_edit_article') }}">new</a>#}
+
+    <h2>Rubrics</h2>
+    <ul>
+        {% for rubric in rubrics %}
+            <li>
+                <ul>
+                    <li>Id: {{ rubric.getId() }}</li>
+                    <li>Name: {{ rubric.getName() }}</li>
+                    <li>Description: {{ rubric.getDescription() }}</li>
+                    {#<li>Created at: {{ rubric.getCreatedAt() }}</li>#}
+                    <li><a href="{{ path('admin_blog_edit_rubric', {'rubric_id' : rubric.getId()}) }}">Edit</a><br /><br /></li>
+                    <li>
+                        <ul>
+                        {% for child in rubric.getChildren() %}
+                            <li>Id: {{ child.getId() }}</li>
+                            <li>Name: {{ child.getName() }}</li>
+                            <li>Description: {{ child.getDescription() }}</li>
+                            {#<li>Created at: {{ rubric.getCreatedAt() }}</li>#}
+                            <li><a href="{{ path('admin_blog_edit_rubric', {'rubric_id' : child.getId()}) }}">Edit</a><br /><br /></li>
+                            <li>
+                                <ul>
+                                {% for article in child.getArticles() %}
+                                    <li>{{ article.getId() }}</li>
+                                {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ path('admin_blog_edit_rubric') }}">new rubric</a>
+{%  endblock %}

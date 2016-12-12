@@ -1,0 +1,84 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+/**
+ * Class User
+ * @package AppBundle\Entity
+ * @ORM\Entity()
+ * @ORM\Table(name="users")
+ */
+class User
+{
+    /**
+     * @var int
+     *
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    protected $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(unique=true)
+     */
+    protected $username;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
+    protected $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(unique=true)
+     */
+    protected $email;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    protected $registration_date;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    protected $last_login;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    protected $is_active;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    protected $locked;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     */
+    protected $roles;
+
+    public function __construct(){
+        $this->active = true;
+    }
+}

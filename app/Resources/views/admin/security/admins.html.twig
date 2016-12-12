@@ -1,0 +1,12 @@
+{% extends ':admin:layout.html.twig' %}
+
+{% block content %}
+    <h1>All admins</h1>
+    <ul>
+        {% for admin in admins %}
+            <li>{{ admin.getUsername() }}</li>
+            <li><a href="{{ path('admin_account', {'admin_id' : admin.getId()}) }}">Edit</a></li>
+        {% endfor %}
+        <li><a href="{{ path('admin_account') }}">New Admin</a></li>
+    </ul>
+{% endblock %}

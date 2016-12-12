@@ -1,0 +1,11 @@
+app:
+    resource: "@AppBundle/Controller/Front/"
+    type:     annotation
+
+admin:
+    resource: "@AppBundle/Controller/Admin/"
+    type:     annotation
+    prefix:   /admin
+
+logout:
+    path: /admin/logout

@@ -1,0 +1,8 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block content %}
+    {% if article.mainImagePath is not empty %}<img src="{{ article.mainImagePath }}"/>{% endif %}
+    {{ form_start(form_edit) }}
+    {{ form_widget(form_edit) }}
+    {{ form_end(form_edit) }}
+{% endblock %}
