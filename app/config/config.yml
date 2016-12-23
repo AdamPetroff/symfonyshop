@@ -80,3 +80,9 @@ kutny_tracy:
 # Cloudinary
 speicher210_cloudinary:
     url: cloudinary://991628188198919:i84Sz_HWlX7NpbIz6mq0-JctXSY@drpl8khwe
+
+kms_froala_editor:
+    language: "en_gb"
+    toolbarInline: false
+    tableColors: [ "#FFFFFF", "#FF0000" ]
+    saveParams: { "id" : "myEditorField" }

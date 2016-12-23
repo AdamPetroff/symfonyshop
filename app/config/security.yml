@@ -1,5 +1,7 @@
 # To get started with security, check out the documentation:
 # http://symfony.com/doc/current/book/security.html
+parameters:
+    admin_logout_target: /admin/login
 security:
 
     encoders:
@@ -24,12 +26,14 @@ security:
             form_login:
                 login_path: admin_login
                 check_path: admin_login
+                default_target_path: admin_blog_index
             logout:
                 path: /admin/logout
-                target: %admin_logout_target%
-                success_handler: adminLogoutSuccessHandler
+                target: '%admin_logout_target%'
+                success_handler: admin_logout_success_handler
 
 
     access_control:
         - { path: ^/admin/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/forgotten_password, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }

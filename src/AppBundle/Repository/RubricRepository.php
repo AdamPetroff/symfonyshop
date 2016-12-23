@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Rubric;
+
 class RubricRepository extends BaseRepository
 {
     public function handleAssociations(&$entity)
@@ -21,5 +23,21 @@ class RubricRepository extends BaseRepository
     {
         $query['andWhere'] = 'r.deleted = 0 AND r.active = 1';
         return $this->query('r', $query);
+    }
+
+    public function findOtherThan(Rubric $entity)
+    {
+        $query = $this->createQueryBuilder('r')
+            ->where('r.deleted = false');
+
+        if($entity->getId()){
+            $query
+                ->andWhere('r.id != :rubric_id')
+                ->setParameter('rubric_id', $entity->getId());
+        }
+
+        return $query
+            ->getQuery()
+            ->getResult();
     }
 }

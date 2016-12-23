@@ -5,8 +5,8 @@
     <ul>
         {% for admin in admins %}
             <li>{{ admin.getUsername() }}</li>
-            <li><a href="{{ path('admin_account', {'admin_id' : admin.getId()}) }}">Edit</a></li>
+            <li><a href="{{ path('admin_account', {'id' : admin.getId()}) }}">Edit</a></li>
         {% endfor %}
-        <li><a href="{{ path('admin_account') }}">New Admin</a></li>
+        <li><a href="{{ path('admin_security_new_admin') }}">New Admin</a></li>
     </ul>
 {% endblock %}

@@ -84,7 +84,8 @@ class User implements \Serializable, UserInterface
     protected $roles;
 
     public function __construct(){
-        $this->active = true;
+        $this->setIsActive(true);
+        $this->setLocked(false);
     }
 
     /**

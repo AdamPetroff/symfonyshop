@@ -4,10 +4,40 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
-
-    adminLogoutSuccessHandler:
+    admin_logout_success_handler:
         class: AppBundle\Utils\LogoutHandler
-        arguments: ["@router", "@security.http_utils", %admin_logout_target%]
+        arguments: ["@router", "@security.http_utils", '%admin_logout_target%']
+
+    app.form.rubric_type:
+        class: AppBundle\Form\RubricType
+        arguments: ['@doctrine']
+        tags:
+            - { name: form.type, alias: app_bundle_rubric_type }
+
+    app.form.article_type:
+        class: AppBundle\Form\ArticleType
+        arguments: ['@doctrine']
+        tags:
+            - { name: form.type, alias: app_bundle_article_type }
+
+    app.form.comment_type:
+        class: AppBundle\Form\CommentType
+        arguments: ['@router']
+        tags:
+            - { name: form.type, alias: app_bundle_comment_type }
+
+    app.service.rubric_manager:
+        class: AppBundle\Service\RubricManager
+        arguments: ['@doctrine']
+
+    app.service.comment_manager:
+        class: AppBundle\Service\CommentManager
+        arguments: ['@doctrine']
+
+    app.service.article_manager:
+        class: AppBundle\Service\ArticleManager
+        arguments: ['@doctrine']
+
+    app.service.admin_manager:
+        class: AppBundle\Service\AdminManager
+        arguments: ['@doctrine', '@security.password_encoder']

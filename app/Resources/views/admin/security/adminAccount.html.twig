@@ -1,6 +1,6 @@
-{% extends ':admin:layout.html.twig' %}
+{% extends 'admin/layout.html.twig' %}
 {% block content %}
-<h1>{% if new_user %}New User{% else %}Edit {{ subject.getUsername() }} {% endif %}</h1>
+<h1>Edit {{ subject.getUsername() }}</h1>
 
 {{ form_start(form) }}
 {{ form_widget(form) }}

@@ -1,0 +1,10 @@
+<div class="js-comment-wrapper">
+    {{ comment.createdAt|date('d. m. Y H:i') }}
+    {{ comment.postedBy }}
+    <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=true>Vote up</button>
+    <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=false>Vote down</button>
+    <span>{{ comment.votes }}</span>
+    <br/>
+    {{ comment.text }}
+    <hr/>
+</div>

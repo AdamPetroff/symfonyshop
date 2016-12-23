@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{{ page_title|default('eshop') }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <script src="{{ asset('assets/js/jquery-3.1.1.min.js') }}"></script>
+</head>
+<body>
+<header>
+    <ul>
+        <li><a href="{{ path('front_blog_index') }}">Blog</a></li>
+        {#<li><a href="{{ path('front_homepage') }}">Front Blog</a></li>#}
+
+    </ul>
+    <div id="js-flash-messages-wrapper">
+        {% for flash_message in app.session.flashBag.get('notice') %}
+            <br />{{ flash_message }}
+        {% endfor %}
+
+        {% for flash_message in app.session.flashBag.get('success') %}
+            <br /><li style="background-color: green">{{ flash_message }}</li>
+        {% endfor %}
+
+        {% for flash_message in app.session.flashBag.get('error') %}
+            <br /><li style="background-color: green">{{ flash_message }}</li>
+        {% endfor %}
+    </div>
+</header>
+<div>{% block content %}{% endblock %}</div>
+<footer>
+    This is a footer
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+</footer>
+</body>
+</html>

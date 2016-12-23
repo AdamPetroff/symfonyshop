@@ -1,0 +1,13 @@
+<div>
+    {% for flash_message in app.session.flashBag.get('notice') %}
+        <br />{{ flash_message }}
+    {% endfor %}
+
+    {% for flash_message in app.session.flashBag.get('success') %}
+        <br /><li style="background-color: green">{{ flash_message }}</li>
+    {% endfor %}
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <br /><li style="background-color: green">{{ flash_message }}</li>
+    {% endfor %}
+</div>

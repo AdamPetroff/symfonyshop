@@ -401,7 +401,9 @@ class Rubric
      */
     public function getArticles()
     {
-        return $this->articles;
+        return $this->articles->filter(function(Article $article){
+            return !$article->getDeleted();
+        });
     }
 
     /**

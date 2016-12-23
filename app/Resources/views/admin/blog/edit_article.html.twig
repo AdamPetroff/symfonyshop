@@ -1,8 +1,14 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block content %}
-    {% if article.mainImagePath is not empty %}<img src="{{ article.mainImagePath }}"/>{% endif %}
+
+    <h1>{{ article.name }}</h1>
+    {% if article.mainImagePath is not empty %}<img width="500" src="{{ app.request.getBasePath }}{{ article.mainImagePath }}"/>{% endif %}
     {{ form_start(form_edit) }}
     {{ form_widget(form_edit) }}
     {{ form_end(form_edit) }}
+
+    <a href="{{ path('admin_article_manage_comments', {'id': article.id}) }}">Manage comments</a>
+    {{ form(form_delete) }}
+
 {% endblock %}

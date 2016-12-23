@@ -1,0 +1,22 @@
+<div class="js-post-comment-wrapper">
+    <span>Nickname:</span><input id="js-post-comment-nickname" type="text">
+    <textarea id="js-post-comment-text"></textarea>
+    <button class="js-post-comment" data-href="{{ path('front_blog_post_comment') }}" data-article-id="{{ article.id }}">Comment!</button>
+</div>
+
+<script>
+    $(function () {
+        $(document).on('click', '.js-post-comment', function () {
+            $element = $(this);
+            var nickname = $element.siblings('#js-post-comment-nickname');
+            var text = $element.siblings('#js-post-comment-text');
+            $.post($element.data('href'), {
+                article_id: $element.data('article-id'),
+                nickname: nickname,
+                text: text
+            }, function (data) {
+
+            })
+        })
+    })
+</script>

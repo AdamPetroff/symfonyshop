@@ -1,0 +1,65 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block content %}
+    <h1>{{ article.name }}</h1>
+    {% if article.mainImg %}
+        <img width="500" src="{{ app.request.getBasePath }}{{ article.mainImagePath }}">
+    {% endif %}
+    {{ article.text|raw }}
+
+    <h2>Comments</h2>
+    <h3>Leave a comment!</h3>
+    <div>
+        {{ form(comment_form) }}
+    </div>
+
+    <script>
+        function postForm( $form, callback ){
+
+            var values = {};
+            $.each( $form.serializeArray(), function(i, field) {
+                values[field.name] = field.value;
+            });
+            values['article_id'] = {{ article.id }};
+            $.post(
+                $form.attr('action'),
+                values,
+                function(data) {
+                    callback(data);
+                }
+            );
+
+        }
+
+        $(function () {
+            $( {{ comment_form.vars.full_name }} ).submit(function(e){
+                e.preventDefault();
+                postForm( $(this), function(data){
+                    if(!data.error){
+                        $('#js-all-comments').html(data.comments_html)
+                    }
+                    console.log(data);
+                    $('#js-flash-messages-wrapper').html(data.flashes_html);
+                });
+            });
+
+            $(document).on('click', '.js-vote-on-comment', function () {
+                var $wrapper = $(this).closest('.js-comment-wrapper');
+                $.post(
+                    $(this).data('href'),
+                    {reaction: $(this).data('reaction'), id: $(this).data('comment-id')},
+                    function (data) {
+                        if(data.html){
+                            $wrapper.html(data.html);
+                        }
+                    }
+                )
+            })
+        })
+    </script>
+
+    <div id="js-all-comments">
+        {% include('front/blog/_all_comments.html.twig') %}
+    </div>
+
+{% endblock %}

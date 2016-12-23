@@ -1,0 +1,34 @@
+{% extends 'front/layout.html.twig' %}
+
+{% macro recursion(rubrics, selected_rubric) %}
+    {% for rubric in rubrics %}
+        <li><a {% if rubric == selected_rubric %}class="text-danger"{% endif %} href="{{ path('front_blog_index', {'url': rubric.url}) }}">{{ rubric.getName() }}</a></li>
+        {% if rubric.children is not empty %}
+            <li>
+                <ul>
+                    {{ _self.recursion(rubric.children(), selected_rubric) }}
+                </ul>
+            </li>
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+    <h2>Choose a rubric</h2>
+    <ul>
+        {{ _self.recursion(rubrics, selected_rubric) }}
+    </ul>
+
+    <h1>Articles</h1>
+    <ul>
+        {% for article in articles %}
+            <li>
+                <ul>
+                    <li>Name: {{ article.getName() }}</li>
+                    <li>Perex: {{ article.getPerex()|raw }}</li>
+                    <li><a href="{{ path('front_display_article', {'url' : article.url}) }}">Display</a><br /><br /></li>
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{%  endblock %}

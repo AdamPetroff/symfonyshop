@@ -109,6 +109,11 @@ class Article
      */
     protected $rubric;
 
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="article")
+     */
+    protected $comments;
+
     public function __construct()
     {
         $this->setDeleted(false);
@@ -423,5 +428,13 @@ class Article
     public function getRubric()
     {
         return $this->rubric;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }
