@@ -20,4 +20,5 @@
 /mailoutput/*
 /.idea
 /.idea/*
+composer.lock
 

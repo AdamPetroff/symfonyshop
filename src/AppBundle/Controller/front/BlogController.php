@@ -43,7 +43,7 @@ class BlogController extends BaseController
         $comment_form = $this->createForm(CommentType::class);
         $comment_form->handleRequest($request);
         
-        return $this->render(':front/blog:article.html.twig', [
+        return $this->render('front/blog/article.html.twig', [
             'article' => $article,
             'comments' => $this->comment_manager->findArticleCommentsOrderedByVotes($article),
             'comment_form' => $comment_form->createView(),

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends BaseController
 {
@@ -26,10 +27,15 @@ class SecurityController extends BaseController
      * @var AdminManager
      */
     private $admin_manager;
+    /**
+     * @var AuthenticationUtils
+     */
+    private $authentication_utils;
 
-    public function __construct(AdminManager $admin_manager)
+    public function __construct(AdminManager $admin_manager, AuthenticationUtils $utils)
     {
         $this->admin_manager = $admin_manager;
+        $this->authentication_utils = $utils;
     }
 
     /**
@@ -38,9 +44,8 @@ class SecurityController extends BaseController
      */
     public function loginAction()
     {
-        $authenticationUtils = $this->get('security.authentication_utils');
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $error = $this->authentication_utils->getLastAuthenticationError();
+        $lastUsername = $this->authentication_utils->getLastUsername();
         if(isset($_GET['from_logout'])){
             $this->addFlash('notice', 'You have been logged out successfully');
         }
@@ -53,6 +58,8 @@ class SecurityController extends BaseController
 
     /**
      * @Route("/forgotten_password", name="admin_forgotten_password")
+     * @param Request $request
+     * @return Response
      */
     public function forgottenPasswordAction(Request $request)
     {
