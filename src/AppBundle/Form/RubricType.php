@@ -3,11 +3,10 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\Rubric;
-use AppBundle\Repository\RubricRepository;
+use AppBundle\Service\RubricManager;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,14 +15,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RubricType extends AbstractType
 {
-    /**
-     * @var Registry
-     */
-    private $doctrine;
 
-    public function __construct(Registry $doctrine)
+    /**
+     * @var RubricManager
+     */
+    private $rubricManager;
+
+    public function __construct(RubricManager $rubricManager)
     {
-        $this->doctrine = $doctrine;
+        $this->rubricManager = $rubricManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -40,7 +40,7 @@ class RubricType extends AbstractType
                 'expanded' => false,
                 'choice_label' => 'name',
                 'multiple' => false,
-                'choices' => $this->doctrine->getRepository(Rubric::class)->findOtherThan($builder->getData()),
+                'choices' => $this->rubricManager->getPotentialParents($builder->getData()),
                 'placeholder' => '-- unassigned --'
             ])
             ->add('submit', SubmitType::class)

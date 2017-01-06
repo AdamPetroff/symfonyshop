@@ -1,0 +1,15 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('AppBundle:Front/Blog:renderSidebar', {selectedRubric: selectedRubric})) }}
+    <div class="col-md-8">
+        <div class="container-fluid">
+            {% block content2 %}{% endblock content2 %}
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#selected-rubric').parents('.collapse').addClass('in');
+        })
+    </script>
+{% endblock content %}

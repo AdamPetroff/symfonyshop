@@ -45,14 +45,18 @@ class Comment
     protected $votes;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comment", inversedBy="children")
      */
-    protected $deleted;
+    protected $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="parent", cascade={"remove"})
+     */
+    protected $children;
 
 
     public function __construct()
     {
-        $this->setDeleted(false);
         $this->setVotes(0);
     }
 
@@ -115,22 +119,6 @@ class Comment
     /**
      * @return mixed
      */
-    public function getDeleted()
-    {
-        return $this->deleted;
-    }
-
-    /**
-     * @param mixed $deleted
-     */
-    public function setDeleted($deleted)
-    {
-        $this->deleted = $deleted;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getVotes()
     {
         return $this->votes;
@@ -158,6 +146,38 @@ class Comment
     public function setArticle($article)
     {
         $this->article = $article;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return Comment[]
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param mixed $children
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
     }
 
     /**

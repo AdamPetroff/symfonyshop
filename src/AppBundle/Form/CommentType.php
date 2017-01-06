@@ -3,8 +3,11 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\Comment;
+use AppBundle\Service\CommentManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,10 +21,15 @@ class CommentType extends AbstractType
      * @var UrlGenerator
      */
     private $router;
+    /**
+     * @var CommentManager
+     */
+    private $commentManager;
 
-    public function __construct(Router $router)
+    public function __construct(Router $router, CommentManager $commentManager)
     {
         $this->router = $router;
+        $this->commentManager = $commentManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -30,7 +38,21 @@ class CommentType extends AbstractType
             ->setAction($this->router->getGenerator()->generate('front_blog_post_comment'))
             ->add('posted_by', TextType::class, ['label' => 'Your nickname'])
             ->add('text', TextareaType::class, ['label' => 'Comment'])
+            ->add('parent', HiddenType::class) 
             ->add('submit', SubmitType::class);
+
+        $builder->get('parent')->addModelTransformer(new CallbackTransformer(
+            function(Comment $parent = null){
+                if($parent)
+                    return $parent->getId();
+                else{
+                    return null;
+                }
+            },
+            function($commentId){
+                return $this->commentManager->getComment($commentId);
+            }
+        ));
 
         return $builder;
     }

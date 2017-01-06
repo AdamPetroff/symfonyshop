@@ -13,6 +13,7 @@ use AppBundle\Entity\Comment;
 use AppBundle\Repository\CommentRepository;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\NoResultException;
 
 class CommentManager
 {
@@ -32,58 +33,55 @@ class CommentManager
     }
 
     /**
-     * @param int $id
+     * @param Comment $comment
      * @param bool $reaction
      * @return Comment
      */
-    public function vote(int $id, bool $reaction)
+    public function voteOnComment(Comment $comment, bool $reaction)
     {
-        //TODO - napojit na redis koli tomu ze viacero ludi moze hlasovat naraz
-        $comment = $this->repository->find($id);
-        if ($comment) {
-            if ($reaction) {
-                $comment->setVotes($comment->getVotes() + 1);
-            } elseif (!$reaction) {
-                $comment->setVotes($comment->getVotes() - 1);
-            }
-            $this->repository->flush($comment);
+        if ($reaction) {
+            $comment->setVotes($comment->getVotes() + 1);
+        } elseif (!$reaction) {
+            $comment->setVotes($comment->getVotes() - 1);
         }
-        
-        return $comment;
+        $this->repository->saveComment($comment);
     }
 
-    public function post(Comment $comment, $article_id = null)
+    public function postComment(Comment $comment, Article $article)
     {
-        $article = $this->doctrine->getRepository(Article::class)->find($_POST['article_id']);
-        if(!$article) {
-            return false;
-        }
         $comment->setArticle($article);
-        $this->repository->flush($comment);
-        
-        return $article;
+        $this->repository->saveComment($comment);
     }
 
-    public function delete(int $id)
+    public function deleteComment(Comment $comment) : bool
     {
-        $comment = $this->repository->find($_POST['id']);
-        if(!$comment){
+        try{
+            $this->repository->deleteComment($comment);
+        }
+        catch(\Exception $e){
             return false;
         }
-        $comment->setDeleted(true);
-        $this->repository->flush($comment);
-        
         return true;
+    }
+
+    public function getComment(int $commentId) : Comment
+    {
+        $comment = $this->repository->find($commentId);
+
+        if(!$comment){
+            return null;
+        }
+        return $comment;
     }
 
     /**
      * @param $article
-     * @return ArrayCollection
+     * @return array
      */
-    public function findArticleCommentsOrderedByVotes($article)
+    public function findArticleBaseCommentsOrderedByVotes($article) : array 
     {
-        $result = $this->repository->findArticleCommentsOrderedBy($article);
-        return new ArrayCollection($result);
+        $result = $this->repository->findArticleBaseCommentsOrderedByVotes($article);
+        return $result;
     }
     
 }

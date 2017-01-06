@@ -1,53 +1,74 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% macro recursion(rubrics) %}
+    <ul class="list-group">
     {% for rubric in rubrics %}
-        <li>Id: {{ rubric.getId() }}</li>
-        <li>Name: {{ rubric.getName() }}</li>
-        <li>Description: {{ rubric.getDescription() }}</li>
-        {#<li>Created at: {{ rubric.getCreatedAt() }}</li>#}
-        <li><a href="{{ path('admin_blog_edit_rubric', {'id' : rubric.getId()}) }}">Edit</a><br /><br /></li>
+        <li class="list-group-item">
+            <ul class="list-inline">
+                <li>Id: {{ rubric.getId() }}</li>
+                <li>Name: {{ rubric.getName() }}</li>
+                <li>Description: {{ rubric.getDescription() }}</li>
+                <li><a href="{{ path('admin_blog_edit_rubric', {'id' : rubric.getId()}) }}">Edit</a></li>
+                {% if rubric.articles is not empty %}
+                    <li>
+                        <a href="#rubric-articles-{{ rubric.id }}" data-toggle="collapse">Show articles</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </li>
         {% if rubric.articles is not empty %}
-            <li>
-                <span><b>Articles:</b></span>
-                <ul>
-                    {% for article in rubric.articles %}
-                        <li><a href="{{ path('admin_blog_edit_article', {'id': article.id}) }}">{{ article.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
+                <div class="collapse" id="rubric-articles-{{ rubric.id }}">
+                    <table class="table ">
+                        {% for article in rubric.articles %}
+                            <tr class="info">
+                                <td>{{ article.name }}</td>
+                                <td><a href="{{ path('admin_blog_edit_article', {'id': article.id}) }}">Edit article</a></td>
+                                <td><a target="_blank" href="{{ path('front_display_article', {'url': article.url}) }}">Show article</a></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
         {% endif %}
+
         {% if rubric.getChildren() is not empty %}
-            <li>
-                <span><b>Subrubrics:</b></span>
-                <ul>
-                    {{ _self.recursion(rubric.getChildren()) }}
-                </ul>
+            <li class="list-group-item">
+                <span>Subrubrics:</span>
+                {{ _self.recursion(rubric.getChildren()) }}
             </li>
         {% endif %}
     {% endfor %}
+    </ul>
 {% endmacro %}
 
 {% block content %}
-    <h2>Rubrics and articles</h2>
-    <ul>
-        {{ _self.recursion(rubrics) }}
-    </ul>
-    <a href="{{ path('admin_blog_new_rubric') }}">new rubric</a>
+    <h2>Rubrics tree</h2>
+    {{ _self.recursion(rubrics) }}
 
-    {#<h1>Articles</h1>#}
-    {#<ul>#}
-    {#{% for article in articles %}#}
-        {#<li>#}
-            {#<ul>#}
-                {#<li>Id: {{ article.getId() }}</li>#}
-                {#<li>Name: {{ article.getName() }}</li>#}
-                {#<li>Perex: {{ article.getPerex()|raw }}</li>#}
-                {#<li>Text: {{ article.getText()|raw }}#}
-                {#<li><a href="{{ path('admin_blog_edit_article', {'id' : article.getId()}) }}">Edit</a><br /><br /></li>#}
-            {#</ul>#}
-        {#</li>#}
-    {#{% endfor %}#}
-    {#</ul>#}
+    <a href="{{ path('admin_blog_new_rubric') }}">new rubric</a>
     <a href="{{ path('admin_blog_new_article') }}">new article</a>
+
+    <h2>Articles</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Title</th>
+            <th>Id</th>
+            <th>Created at</th>
+            <th>Rubric</th>
+            <th>Action</th>
+        </tr>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article.name }}</td>
+            <td>{{ article.id }}</td>
+            <td>{{ article.createdAt|date('d. m. Y H:i') }}</td>
+            <td>{{ article.rubric.name }}</td>
+            <td>
+                <a href="{{ path('admin_blog_edit_article', {'id': article.id}) }}">Edit</a>
+                <a target="_blank" href="{{ path('front_display_article', {'url': article.url}) }}">Show</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 {%  endblock %}

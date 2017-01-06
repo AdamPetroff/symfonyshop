@@ -32,7 +32,8 @@
         "danielstjules/stringy": "^2.3",
         "speicher210/cloudinary-bundle": "^0.5.0",
         "kms/froala-editor-bundle": "dev-master",
-        "dunglas/action-bundle": "^0.3.1"
+        "dunglas/action-bundle": "^0.3.1",
+        "phpmd/phpmd": "^2.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

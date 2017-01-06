@@ -328,11 +328,24 @@ class Rubric
     /**
      * Get children
      *
-     * @return string
+     * @return Collection
      */
     public function getChildren()
     {
         return $this->children;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getNonDeletedChildren()
+    {
+        return $this->children->filter(function(Rubric $rubric){
+            if($rubric->getDeleted()){
+                return false;
+            }
+            else return true;
+        });
     }
 
     /**

@@ -36,6 +36,9 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    form_themes:
+        - 'bootstrap_3_layout.html.twig'
+        - '_form/formTheme.html.twig'
 
 # Doctrine Configuration
 doctrine:
@@ -77,12 +80,7 @@ kutny_tracy:
         - RuntimeException
         - UnexpectedValueException
 
-# Cloudinary
-speicher210_cloudinary:
-    url: cloudinary://991628188198919:i84Sz_HWlX7NpbIz6mq0-JctXSY@drpl8khwe
-
-kms_froala_editor:
-    language: "en_gb"
-    toolbarInline: false
-    tableColors: [ "#FFFFFF", "#FF0000" ]
-    saveParams: { "id" : "myEditorField" }
+## Cloudinary
+#speicher210_cloudinary:
+#    url: cloudinary://991628188198919:i84Sz_HWlX7NpbIz6mq0-JctXSY@drpl8khwe
+#

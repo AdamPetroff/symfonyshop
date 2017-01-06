@@ -2,27 +2,36 @@
 <html>
     <head>
         <title>{% block title %}{{ page_title|default('eshop') }}{% endblock %}</title>
+        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/fonts/glyphicons-halflings-regular.woff') }}">
         <script src="{{ asset('assets/js/jquery-3.1.1.min.js') }}"></script>
+        <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     </head>
     <body>
-        <header>
-            <ul>
-                {% if app.getUser() %}
-                    <li><a href="{{ logout_path() }}">Logout</a></li>
-                {% endif %}
-                <li><a href="{{ path('admin_blog_index') }}">Blog</a></li>
-                <li><a href="{{ path('front_blog_index') }}">Front Blog</a></li>
-                <li><a href="{{ path('admin_admins') }}">Admins</a></li>
-                <li><a href="{{ path('front_homepage') }}">Homepage</a></li>
-            </ul>
-
-            <div id="js-flash-messages-wrapper">
-                {% include('front/_includes/_flash_messages.html.twig') %}
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    {% if app.getUser() %}
+                        <li><a href="{{ logout_path() }}">Logout</a></li>
+                    {% endif %}
+                    <li><a href="{{ path('admin_blog_index') }}">Blog</a></li>
+                    <li><a href="{{ path('admin_admins') }}">Admins</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ path('front_homepage') }}">Homepage</a></li>
+                    <li><a href="{{ path('front_blog_index') }}">Front Blog</a></li>
+                </ul>
             </div>
+        </nav>
 
-        </header>
-        <div>{% block content %}{% endblock %}</div>
-        <footer>
+        <div id="js-flash-messages-wrapper">
+            {% include('front/_includes/_flash_messages.html.twig') %}
+        </div>
+
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+        <footer class="text-center">
             This is a footer
         </footer>
     </body>

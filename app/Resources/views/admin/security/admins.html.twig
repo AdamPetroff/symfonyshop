@@ -2,11 +2,23 @@
 
 {% block content %}
     <h1>All admins</h1>
-    <ul>
+    <table class="table table-bordered">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Last login</th>
+            <th>Action</th>
+        </tr>
         {% for admin in admins %}
-            <li>{{ admin.getUsername() }}</li>
-            <li><a href="{{ path('admin_account', {'id' : admin.getId()}) }}">Edit</a></li>
+            <tr>
+                <td>{{ admin.username }}</td>
+                <td>{{ admin.email }}</td>
+                <td>{{ admin.roles|join(',') }}</td>
+                <td>{{ admin.lastLogin|date('d. m. Y H:i') }}</td>
+                <td><a href="{{ path('admin_account', {'id' : admin.getId()}) }}">Edit</a></td>
+            </tr>
         {% endfor %}
-        <li><a href="{{ path('admin_security_new_admin') }}">New Admin</a></li>
-    </ul>
+    </table>
+    <a class="btn btn-info" href="{{ path('admin_security_new_admin') }}">New Admin</a>
 {% endblock %}

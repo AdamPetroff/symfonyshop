@@ -9,14 +9,29 @@ namespace AppBundle\Controller\admin;
 
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\HttpFoundation\Response;
 
-class HomepageController extends BaseController
+class HomepageController extends Controller
 {
     /**
+     * @var TwigEngine
+     */
+    private $twig;
+
+    public function __construct(TwigEngine $twig)
+    {
+        $this->twig = $twig;
+    }
+
+    /**
      * @Route("/", name="admin_index")
+     * @return Response
      */
     public function indexAction()
     {
-        return $this->render('admin/homepage/index.html.twig');
+        $this->addFlash('notice', 'asd');
+        return $this->twig->renderResponse('admin/homepage/index.html.twig');
     }
 }

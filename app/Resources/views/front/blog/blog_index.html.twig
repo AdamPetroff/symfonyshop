@@ -1,34 +1,26 @@
-{% extends 'front/layout.html.twig' %}
+{% extends 'front/blog/blog_layout.html.twig' %}
 
-{% macro recursion(rubrics, selected_rubric) %}
-    {% for rubric in rubrics %}
-        <li><a {% if rubric == selected_rubric %}class="text-danger"{% endif %} href="{{ path('front_blog_index', {'url': rubric.url}) }}">{{ rubric.getName() }}</a></li>
-        {% if rubric.children is not empty %}
-            <li>
-                <ul>
-                    {{ _self.recursion(rubric.children(), selected_rubric) }}
-                </ul>
-            </li>
-        {% endif %}
-    {% endfor %}
-{% endmacro %}
-
-{% block content %}
-    <h2>Choose a rubric</h2>
-    <ul>
-        {{ _self.recursion(rubrics, selected_rubric) }}
-    </ul>
-
+{% block content2 %}
     <h1>Articles</h1>
-    <ul>
+    <ul class="list-unstyled">
         {% for article in articles %}
-            <li>
-                <ul>
-                    <li>Name: {{ article.getName() }}</li>
-                    <li>Perex: {{ article.getPerex()|raw }}</li>
-                    <li><a href="{{ path('front_display_article', {'url' : article.url}) }}">Display</a><br /><br /></li>
-                </ul>
+            <li class="c-article-height">
+                <div class="row">
+                    <div class="col-md-3">
+                        {% if article.isMainImg %}
+                            <img width="100%" src="{{ app.request.getBasePath }}{{ article.getMainImagePath }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h2><a href="{{ path('front_display_article', {'url': article.url }) }}">{{ article.name }}</a></h2>
+                        <p>{{ article.perex }}</p>
+                    </div>
+                </div>
             </li>
         {% endfor %}
+
+        {% if articles is empty %}
+            {% include 'front/_includes/_empty_page_notice.html.twig' %}
+        {% endif %}
     </ul>
 {%  endblock %}

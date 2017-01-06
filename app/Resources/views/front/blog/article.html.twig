@@ -1,21 +1,29 @@
-{% extends 'front/layout.html.twig' %}
+{% extends 'front/blog/blog_layout.html.twig' %}
 
-{% block content %}
+{% block content2 %}
     <h1>{{ article.name }}</h1>
     {% if article.mainImg %}
         <img width="500" src="{{ app.request.getBasePath }}{{ article.mainImagePath }}">
     {% endif %}
-    {{ article.text|raw }}
+    <div class="c-article-content">
+        {{ article.text|raw }}
+    </div>
+    <span class="text-muted small">Published on: {{ article.createdAt|date('d. m. Y H:i') }}</span>
 
     <h2>Comments</h2>
     <h3>Leave a comment!</h3>
-    <div>
-        {{ form(comment_form) }}
+    <div class="row">
+        <div class="col-md-6" id="article-comment-form">
+            {{ render(controller('AppBundle:Front/Blog:renderCommentForm')) }}
+        </div>
+    </div>
+
+    <div id="js-all-comments">
+        {% include('front/blog/_all_comments.html.twig') %}
     </div>
 
     <script>
         function postForm( $form, callback ){
-
             var values = {};
             $.each( $form.serializeArray(), function(i, field) {
                 values[field.name] = field.value;
@@ -28,26 +36,31 @@
                     callback(data);
                 }
             );
-
         }
 
         $(function () {
-            $( {{ comment_form.vars.full_name }} ).submit(function(e){
+            $(document).on('submit', 'form[name="comment"]', function(e) {
                 e.preventDefault();
                 postForm( $(this), function(data){
                     if(!data.error){
                         $('#js-all-comments').html(data.comments_html)
                     }
-                    console.log(data);
                     $('#js-flash-messages-wrapper').html(data.flashes_html);
                 });
+            });
+
+            $(document).on('click', '.js-respond-to-comment', function () {
+                var $wrapper = $(this).closest('.js-comment-wrapper');
+                $.get($(this).data('href'), function (data) {
+                    $wrapper.append(data);
+                })
             });
 
             $(document).on('click', '.js-vote-on-comment', function () {
                 var $wrapper = $(this).closest('.js-comment-wrapper');
                 $.post(
                     $(this).data('href'),
-                    {reaction: $(this).data('reaction'), id: $(this).data('comment-id')},
+                    {reaction: $(this).data('reaction'), commentId: $(this).data('comment-id')},
                     function (data) {
                         if(data.html){
                             $wrapper.html(data.html);
@@ -57,9 +70,5 @@
             })
         })
     </script>
-
-    <div id="js-all-comments">
-        {% include('front/blog/_all_comments.html.twig') %}
-    </div>
 
 {% endblock %}

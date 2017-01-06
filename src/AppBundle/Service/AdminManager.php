@@ -42,11 +42,11 @@ class AdminManager
 
     public function assignNewPassword(User $user) : string
     {
-        $new_password = substr(md5(rand()), 0, 7);
-        $user->setPassword($this->encoder->encodePassword($user, $new_password));
-        $this->repository->flush($user);
+        $newPassword = substr(md5(rand()), 0, 7);
+        $user->setPassword($this->encoder->encodePassword($user, $newPassword));
+        $this->repository->saveUser($user);
         
-        return $new_password;
+        return $newPassword;
     }
 
     public function findAll()
@@ -56,12 +56,12 @@ class AdminManager
 
     public function save(User $user)
     {
-        $this->repository->flush($user);
+        $this->repository->saveUser($user);
     }
 
     public function saveNew(User $user)
     {
         $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
-        $this->repository->flush($user);
+        $this->repository->saveUser($user);
     }
 }

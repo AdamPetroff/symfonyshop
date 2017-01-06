@@ -5,52 +5,59 @@ namespace AppBundle\Controller\Admin;
 use AppBundle\Entity\User;
 use AppBundle\Form\AdminAccountType;
 use AppBundle\Form\AdminForgottenPassword;
-use AppBundle\Form\AdminForgottenPassworde;
 use AppBundle\Form\NewAdminType;
-use AppBundle\Repository\UserRepository;
 use AppBundle\Service\AdminManager;
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\Form\Form;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends BaseController
+class SecurityController extends Controller
 {
-    //TODO - role do entity
-    //TODO - zmena hesla pre adminov
     /**
      * @var AdminManager
      */
-    private $admin_manager;
+    private $adminManager;
     /**
      * @var AuthenticationUtils
      */
     private $authentication_utils;
+    /**
+     * @var TwigEngine
+     */
+    private $twig;
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
 
-    public function __construct(AdminManager $admin_manager, AuthenticationUtils $utils)
+    public function __construct(TwigEngine $twig, AdminManager $adminManager, AuthenticationUtils $utils, FormFactory $formFactory)
     {
-        $this->admin_manager = $admin_manager;
+        $this->adminManager = $adminManager;
         $this->authentication_utils = $utils;
+        $this->twig = $twig;
+        $this->formFactory = $formFactory;
     }
 
     /**
      * @Route("/login", name="admin_login")
+     * @param Request $request
      * @return Response
      */
-    public function loginAction()
+    public function loginAction(Request $request)
     {
         $error = $this->authentication_utils->getLastAuthenticationError();
         $lastUsername = $this->authentication_utils->getLastUsername();
-        if(isset($_GET['from_logout'])){
+        $fromLogout = $request->query->get('from_logout');
+        if($fromLogout){
             $this->addFlash('notice', 'You have been logged out successfully');
         }
 
-        return $this->render('admin/security/login.html.twig', [
+        return $this->twig->renderResponse('admin/security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
@@ -63,21 +70,21 @@ class SecurityController extends BaseController
      */
     public function forgottenPasswordAction(Request $request)
     {
-        $form = $this->getFormBuilder(AdminForgottenPassword::class)->getForm();
+        $form = $this->formFactory->create(AdminForgottenPassword::class);
         $form->handleRequest($request);
         if($form->isValid()){
-            $user = $this->admin_manager->findByUsername($form->getData()['username']);
+            $user = $this->adminManager->findByUsername($form->getData()['username']);
             if($user){
-                $new_password = $this->admin_manager->assignNewPassword($user);
+                $newPassword = $this->adminManager->assignNewPassword($user);
                 //TODO - send new password in email
-                $this->addFlash('success', "Your password has been successfully changed. New password : '$new_password'");
+                $this->addFlash('success', "Your password has been successfully changed. New password : '$newPassword'");
                 return $this->redirectToRoute('admin_login');
             }
             else{
                 $form->addError(new FormError('The user has not been found. Please check your spelling.'));
             }
         }
-        return $this->render('admin/security/forgottenPassword.html.twig', [
+        return $this->twig->renderResponse('admin/security/forgottenPassword.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -87,9 +94,9 @@ class SecurityController extends BaseController
      * @Route("/admins", name="admin_admins")
      */
     public function adminsAction(){
-        $admins = $this->admin_manager->findAll();
+        $admins = $this->adminManager->findAll();
         
-        return $this->render(':admin/security:admins.html.twig', [
+        return $this->twig->renderResponse(':admin/security:admins.html.twig', [
             'admins' => $admins
         ]);
     }
@@ -102,16 +109,16 @@ class SecurityController extends BaseController
      */
     public function editAdminAction(Request $request, User $user)
     {
-        $form = $this->createForm(AdminAccountType::class, $user);
+        $form = $this->formFactory->create(AdminAccountType::class, $user);
         $form->handleRequest($request);
         
         if($form->isSubmitted() && $form->isValid()){
-            $this->admin_manager->save($form->getData());
+            $this->adminManager->save($form->getData());
             $this->addFlash('notice','success!!');
             return $this->redirectToRoute('admin_index');
         }
         
-        return $this->render('admin/security/adminAccount.html.twig', [
+        return $this->twig->renderResponse('admin/security/adminAccount.html.twig', [
             'form' => $form->createView(),
             'subject' => $user
         ]);
@@ -124,16 +131,16 @@ class SecurityController extends BaseController
      */
     public function newAdminAction(Request $request)
     {
-        $form = $this->createForm(NewAdminType::class);
+        $form = $this->formFactory->create(NewAdminType::class);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-            $this->admin_manager->saveNew($form->getData());
+            $this->adminManager->saveNew($form->getData());
             $this->addFlash('notice','New admin has been saved');
             return $this->redirectToRoute('admin_index');
         }
 
-        return $this->render('admin/security/new_admin.html.twig', [
+        return $this->twig->renderResponse('admin/security/new_admin.html.twig', [
             'form' => $form->createView(),
         ]);
     }

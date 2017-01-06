@@ -3,51 +3,58 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Article;
-use AppBundle\Entity\Comment;
 use AppBundle\Entity\Rubric;
 use AppBundle\Form\ArticleType;
 use AppBundle\Form\RubricType;
-use AppBundle\Repository\ArticleRepository;
-use AppBundle\Repository\RubricRepository;
 use AppBundle\Service\ArticleManager;
 use AppBundle\Service\CommentManager;
 use AppBundle\Service\RubricManager;
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use KMS\FroalaEditorBundle\Form\Type\FroalaEditorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Router;
 
-class BlogController extends BaseController
+class BlogController extends Controller
 {
     /**
      * @var ArticleManager
      */
-    private $article_manager;
+    private $articleManager;
     /**
      * @var RubricManager
      */
-    private $rubric_manager;
+    private $rubricManager;
     /**
      * @var CommentManager
      */
-    private $comment_manager;
+    private $commentManager;
+    /**
+     * @var TwigEngine
+     */
+    private $twig;
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
 
-    public function __construct(ArticleManager $article_manager, RubricManager $rubric_manager, CommentManager $comment_manager)
+    public function __construct(
+        TwigEngine $twig, 
+        ArticleManager $articleManager,
+        RubricManager $rubricManager,
+        CommentManager $commentManager,
+        FormFactory $formFactory
+    )
     {
-        $this->article_manager = $article_manager;
-        $this->rubric_manager = $rubric_manager;
-        $this->comment_manager = $comment_manager;
+        $this->articleManager = $articleManager;
+        $this->rubricManager = $rubricManager;
+        $this->commentManager = $commentManager;
+        $this->twig = $twig;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -55,10 +62,12 @@ class BlogController extends BaseController
      * @return Response
      */
     public function indexAction(){
-        $rubrics = $this->rubric_manager->getBaseRubrics();
+        $rubrics = $this->rubricManager->getBaseRubrics();
+        $articles = $this->articleManager->getNonDeletedArticles();
 
-        return $this->render('admin/blog/index.html.twig', [
-            'rubrics' => $rubrics
+        return $this->twig->renderResponse('admin/blog/index.html.twig', [
+            'rubrics' => $rubrics,
+            'articles' => $articles
         ]);
     }
 
@@ -67,33 +76,32 @@ class BlogController extends BaseController
      * @param Article $article
      * @return Response
      * @Route("/blog/article/{id}", name="admin_blog_edit_article")
-     * @ParamConverter(class="AppBundle\Entity\Article")
      */
     public function editArticleAction(Request $request, Article $article){
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->formFactory->create(ArticleType::class, $article);
         $form->handleRequest($request);
         
-        $delete_form = $this->createFormBuilder()
+        $deleteForm = $this->formFactory->createBuilder()
             ->add('delete', SubmitType::class)
             ->getForm();
 
-        $delete_form->handleRequest($request);
-        if($delete_form->isSubmitted()){
-            $this->article_manager->delete($article);
+        $deleteForm->handleRequest($request);
+        if($deleteForm->isSubmitted()){
+            $this->articleManager->deleteArticle($article);
             $this->addFlash('success', 'Article was deleted successfully');
             return $this->redirectToRoute('admin_blog_index');
         }
         
         if($form->isSubmitted() && $form->isValid()){
-            $this->article_manager->save($form->getData());
+            $this->articleManager->saveArticle($form->getData());
             $this->addFlash('success', 'The item was saved successfully');
             
             return $this->redirectToRoute('admin_blog_index');
         }
 
-        return $this->render('admin/blog/edit_article.html.twig', [
+        return $this->twig->renderResponse('admin/blog/edit_article.html.twig', [
             'form_edit' => $form->createView(),
-            'form_delete' => $delete_form->createView(),
+            'form_delete' => $deleteForm->createView(),
             'article' => $article,
         ]);
     }
@@ -105,17 +113,17 @@ class BlogController extends BaseController
      */
     public function newArticleAction(Request $request)
     {
-        $form = $this->createForm(ArticleType::class);
+        $form = $this->formFactory->create(ArticleType::class);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-            $this->article_manager->save($form->getData());
+            $this->articleManager->saveArticle($form->getData());
             $this->addFlash('success', 'The item was saved successfully');
 
             return $this->redirectToRoute('admin_blog_index');
         }
 
-        return $this->render('admin/blog/new_article.html.twig', [
+        return $this->twig->renderResponse('admin/blog/new_article.html.twig', [
             'form_edit' => $form->createView(),
         ]);
     }
@@ -125,21 +133,20 @@ class BlogController extends BaseController
      * @param Rubric $rubric
      * @return Response
      * @Route("/blog/rubric/{id}", name="admin_blog_edit_rubric")
-     * @ParamConverter(class="AppBundle\Entity\Rubric")
      */
     public function editRubricAction(Request $request, Rubric $rubric)
     {
-        $form = $this->createForm(RubricType::class, $rubric);
+        $form = $this->formFactory->create(RubricType::class, $rubric);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-            $this->rubric_manager->save($form->getData());
+            $this->rubricManager->save($form->getData());
             $this->addFlash('success', 'The item was saved successfully');
             
             return $this->redirectToRoute('admin_blog_index');
         }
 
-        return $this->render('admin/blog/edit_rubric.html.twig', [
+        return $this->twig->renderResponse('admin/blog/edit_rubric.html.twig', [
             'form_edit' => $form->createView(),
             'rubric' => $rubric
         ]);
@@ -152,57 +159,61 @@ class BlogController extends BaseController
      */
     public function newRubricAction(Request $request)
     {
-        $form = $this->createForm(RubricType::class, new Rubric());
+        $form = $this->formFactory->create(RubricType::class, new Rubric());
 
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-            $this->rubric_manager->save($form->getData());
+            $this->rubricManager->save($form->getData());
             $this->addFlash('success', 'The item was saved successfully');
 
             return $this->redirectToRoute('admin_blog_index');
         }
 
-        return $this->render('admin/blog/edit_rubric.html.twig', [
+        return $this->twig->renderResponse('admin/blog/edit_rubric.html.twig', [
             'form_edit' => $form->createView()
         ]);
     }
 
     /**
      * @Route("/blog/manage_comments/{id}", name="admin_article_manage_comments")
-     * @ParamConverter()
      * @param Article $article
      * @return Response
      */
     public function manageCommentsAction(Article $article)
     {
-        return $this->render('admin/blog/manage_comments.html.twig', [
+        return $this->twig->renderResponse('admin/blog/manage_comments.html.twig', [
             'article' => $article,
-            'comments' => $this->comment_manager->findArticleCommentsOrderedByVotes($article)
+            'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article)
         ]);
     }
 
     /**
      * @Route("/admin/delete_comment", name="admin_blog_delete_comment")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Twig_Error
      */
-    public function deleteCommentAction()
+    public function deleteCommentAction(Request $request)
     {
         $error = true;
-        if(isset($_POST['id'])){
-            if($this->comment_manager->delete($_POST['id'])){
+        $commentId = $request->request->get('comment_id');
+        $comment = $this->commentManager->getComment($commentId);
+        if($comment){
+            if($this->commentManager->deleteComment($comment)){
                 $this->addFlash('success', 'Comment was deleted successfully');
                 $error = false;
             }
             else{
-                $this->addFlash('error', 'Comment not found');
+                $this->addFlash('error', 'Comment could not be deleted');
             }
         }   
         else{
-            $this->addFlash('error', 'Bad data');
+            $this->addFlash('error', 'Comment was not found');
         }
         return new JsonResponse([
             'error' => $error,
-            'flashes_html' => $this->renderView('front/_includes/_flash_messages.html.twig')
+            'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig')
         ]);
     }
 }

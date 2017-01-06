@@ -1,10 +1,37 @@
-<div class="js-comment-wrapper">
-    {{ comment.createdAt|date('d. m. Y H:i') }}
-    {{ comment.postedBy }}
-    <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=true>Vote up</button>
-    <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=false>Vote down</button>
-    <span>{{ comment.votes }}</span>
-    <br/>
-    {{ comment.text }}
-    <hr/>
-</div>
+{% macro commentLayout(comment) %}
+    <div class="js-comment-wrapper">
+        <div class="row">
+            <div class="col-md-6">
+                <b>
+                    {{ comment.postedBy }}
+                </b>
+            </div>
+            <div class="col-md-2">
+                <button class="js-respond-to-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_render_comment_form', { parentId: comment.id }) }}">Respond</button>
+            </div>
+            <div class="col-md-4">
+                <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=1>Vote up</button>
+                <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=0>Vote down</button>
+                <span>{{ comment.votes }}</span>
+            </div>
+        </div>
+        <div class="row">
+        <span class="text-muted small col-md-12">
+            {{ comment.createdAt|date('d. m. Y H:i') }}
+        </span>
+        </div>
+        <div class="row">
+            <p class="col-md-12">
+                {{ comment.text }}
+            </p>
+        </div>
+        <div class="col-md-11 col-md-offset-1">
+            {% for child in comment.children %}
+                {{ _self.commentLayout(child) }}
+            {% endfor %}
+        </div>
+        <hr/>
+    </div>
+{% endmacro %}
+
+{{ _self.commentLayout(comment) }}

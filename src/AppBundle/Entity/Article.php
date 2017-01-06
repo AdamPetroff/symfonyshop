@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 use AppBundle\Repository\ArticleRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Stringy\StaticStringy;
 use Stringy\Stringy;
@@ -38,6 +40,7 @@ class Article
 
     /**
      * @var string
+     * @Assert\NotBlank(message="Please fill in the name of the article")
      *
      * @ORM\Column(type="string")
      */
@@ -61,14 +64,12 @@ class Article
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
-     *
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message="Please fill in the text of the article")
      */
     protected $text;
 
     /**
      * @var bool
-     *
      * @ORM\Column(type="boolean")
      */
     protected $display;
@@ -91,7 +92,6 @@ class Article
      * @var string
      *
      * @ORM\Column(nullable=true)
-     * @Assert\Image()
      */
     protected $main_img;
 
@@ -104,6 +104,7 @@ class Article
 
     /**
      * @var mixed
+     * @Assert\NotNull(message="Please select a rubric this article belong to.")
      * 
      * @ORM\ManyToOne(inversedBy="articles", targetEntity="AppBundle\Entity\Rubric")
      */
@@ -113,6 +114,12 @@ class Article
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="article")
      */
     protected $comments;
+
+    /**
+     * @var UploadedFile
+     * @Assert\Image()
+     */
+    protected $tmpMainImgFile;
 
     public function __construct()
     {
@@ -387,26 +394,6 @@ class Article
     }
 
     /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function beforeSaving()
-    {
-        if(empty($this->getCreatedAt())){
-            $this->setCreatedAt(new \DateTime());
-        }
-        if(empty($this->getPerex())){
-            if(strlen($this->getText()) > 200){
-                $this->setPerex(substr($this->getText(), 0, 200) . '...');
-            }
-            else{
-                $this->setPerex($this->getText());
-            }
-        }
-    }
-
-
-    /**
      * Set rubric
      *
      * @param \AppBundle\Entity\Rubric|int $rubric
@@ -436,5 +423,49 @@ class Article
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     * @param PreUpdateEventArgs $event
+     */
+    public function preUpdate(PreUpdateEventArgs $event)
+    {
+        if($event->hasChangedField('perex') && strlen($this->getPerex()) > 200){
+            $this->setPerex(substr($this->getPerex(), 0, 200) . '...');
+        }
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        $this->setCreatedAt(new \DateTime());
+
+        if(empty($this->getPerex())){
+            if(strlen($this->getText()) > 200){
+                $this->setPerex(substr(StaticStringy::htmlDecode(strip_tags($this->getText())), 0, 200) . '...');
+            }
+            else{
+                $this->setPerex($this->getText());
+            }
+        }
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    public function getTmpMainImgFile()
+    {
+        return $this->tmpMainImgFile;
+    }
+
+    /**
+     * @param UploadedFile $tmpMainImgFile
+     */
+    public function setTmpMainImgFile($tmpMainImgFile)
+    {
+        $this->tmpMainImgFile = $tmpMainImgFile;
     }
 }

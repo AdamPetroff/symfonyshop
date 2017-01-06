@@ -2,8 +2,12 @@
 {% block content %}
     <h1>New User</h1>
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
 
+        </div>
+    </div>
 {% endblock %}

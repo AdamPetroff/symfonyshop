@@ -1,23 +1,49 @@
 {% extends 'admin/layout.html.twig' %}
 
+{% macro commentLayout(comment) %}
+    <div class="js-comment-wrapper">
+        <div class="row">
+            <div class="col-md-6">
+                <b>
+                    {{ comment.postedBy }}
+                </b>
+            </div>
+            <div class="col-md-2">
+                <span>Votes: {{ comment.votes }}</span>
+            </div>
+            <div class="col-md-4">
+                <button class="js-delete-comment"  data-href="{{ path('admin_blog_delete_comment') }}" data-id="{{ comment.id }}">Delete</button>
+            </div>
+        </div>
+        <div class="row">
+        <span class="text-muted small col-md-12">
+            {{ comment.createdAt|date('d. m. Y H:i') }}
+        </span>
+        </div>
+        <div class="row">
+            <p class="col-md-12">
+                {{ comment.text }}
+            </p>
+        </div>
+        <div class="col-md-11 col-md-offset-1">
+            {% for child in comment.children %}
+                {{ _self.commentLayout(child) }}
+            {% endfor %}
+        </div>
+        <hr/>
+    </div>
+{% endmacro %}
+
 {% block content %}
     {% for comment in comments %}
-        <div class="js-comment-wrapper">
-            <span><b>{{ comment.postedBy }}</b></span>
-            <ul>
-                <li>{{ comment.createdAt|date('d. m. Y H:i') }}</li>
-                <li>{{ comment.votes }}</li>
-                <li>{{ comment.text }}</li>
-                <li><button class="js-delete-comment"  data-href="{{ path('admin_blog_delete_comment') }}" data-id="{{ comment.id }}">Delete</button></li>
-            </ul>
-        </div>
+        {{ _self.commentLayout(comment) }}
     {% endfor %}
 
     <script>
         $(function () {
             $(document).on('click', '.js-delete-comment', function () {
                 var $element = $(this);
-                $.post($element.data('href'), {id: $element.data('id')}, function (data) {
+                $.post($element.data('href'), {comment_id: $element.data('id')}, function (data) {
                     $('.js-flash-messages-wrapper').html(data.flashes_html);
                     if(!data.error){
                         $element.closest('.js-comment-wrapper').remove();

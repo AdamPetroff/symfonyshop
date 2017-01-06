@@ -10,19 +10,19 @@ services:
 
     app.form.rubric_type:
         class: AppBundle\Form\RubricType
-        arguments: ['@doctrine']
+        arguments: ['@app.service.rubric_manager']
         tags:
             - { name: form.type, alias: app_bundle_rubric_type }
 
     app.form.article_type:
         class: AppBundle\Form\ArticleType
-        arguments: ['@doctrine']
+        arguments: ['@app.service.rubric_manager']
         tags:
             - { name: form.type, alias: app_bundle_article_type }
 
     app.form.comment_type:
         class: AppBundle\Form\CommentType
-        arguments: ['@router']
+        arguments: ['@router', '@app.service.comment_manager']
         tags:
             - { name: form.type, alias: app_bundle_comment_type }
 

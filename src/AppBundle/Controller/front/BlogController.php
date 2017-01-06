@@ -3,32 +3,58 @@
 namespace AppBundle\Controller\Front;
 
 use AppBundle\Entity\Article;
+use AppBundle\Entity\Comment;
+use AppBundle\Entity\Rubric;
 use AppBundle\Form\CommentType;
+use AppBundle\Service\ArticleManager;
 use AppBundle\Service\CommentManager;
 use AppBundle\Service\RubricManager;
 use Doctrine\ORM\Mapping as ORM;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class BlogController extends BaseController
+class BlogController extends Controller
 {
     /**
      * @var CommentManager
      */
-    private $comment_manager;
+    private $commentManager;
     /**
      * @var RubricManager
      */
-    private $rubric_manager;
+    private $rubricManager;
+    /**
+     * @var TwigEngine
+     */
+    private $twig;
+    /**
+     * @var ArticleManager
+     */
+    private $articleManager;
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
 
-    public function __construct(CommentManager $comment_manager, RubricManager $rubric_manager)
+    public function __construct(
+        TwigEngine $twig, 
+        CommentManager $commentManager, 
+        RubricManager $rubricManager,
+        ArticleManager $articleManager,
+        FormFactory $formFactory
+    )
     {
-        $this->comment_manager = $comment_manager;
-        $this->rubric_manager = $rubric_manager;
+        $this->commentManager = $commentManager;
+        $this->rubricManager = $rubricManager;
+        $this->twig = $twig;
+        $this->articleManager = $articleManager;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -36,17 +62,17 @@ class BlogController extends BaseController
      * @param Article $article
      * @return Response
      * @Route("/article/{url}", name="front_display_article")
-     * @ParamConverter(class="AppBundle\Entity\Article")
      */
-    public function DisplayArticleAction(Request $request, Article $article)
+    public function displayArticleAction(Request $request, Article $article)
     {
-        $comment_form = $this->createForm(CommentType::class);
-        $comment_form->handleRequest($request);
-        
-        return $this->render('front/blog/article.html.twig', [
+        $commentForm = $this->formFactory->create(CommentType::class);
+        $commentForm->handleRequest($request);
+
+        return $this->twig->renderResponse('front/blog/article.html.twig', [
             'article' => $article,
-            'comments' => $this->comment_manager->findArticleCommentsOrderedByVotes($article),
-            'comment_form' => $comment_form->createView(),
+            'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article),
+            'comment_form' => $commentForm->createView(),
+            'selectedRubric' => $article->getRubric()
         ]);
     }
 
@@ -58,47 +84,58 @@ class BlogController extends BaseController
     public function postCommentAction(Request $request)
     {
         $error = true;
-        $form = $this->createForm(CommentType::class);
+        $form = $this->formFactory->create(CommentType::class);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid() && isset($_POST['article_id'])){
-            $article = $this->comment_manager->post($form->getData(), $_POST['article_id']);
+        $articleId = $request->request->get('article_id');
+        if($articleId){
+            $article = $this->articleManager->getArticle($articleId);
+        }
+        
+        if($form->isSubmitted() && $form->isValid() && isset($article)){
+            $this->commentManager->postComment($form->getData(), $article);
             $error = false;
             $this->addFlash('success', 'Thanks for Commenting');
             if($article){
                 return new JsonResponse([
                     'error' => $error,
-                    'flashes_html' => $this->renderView('front/_includes/_flash_messages.html.twig'),
-                    'comments_html' => $this->renderView('front/blog/_all_comments.html.twig', [
-                        'comments' => $this->comment_manager->findArticleCommentsOrderedByVotes($article)
+                    'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig'),
+                    'comments_html' => $this->twig->render('front/blog/_all_comments.html.twig', [
+                        'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article)
                     ])
                 ]);
             }
                 
         }
         else{
-            $this->addFlash('error', 'Form is not submitted or is invalid');
+            $this->addFlash('error', 'The comment could not be posted');
         }
         
         return new JsonResponse([
             'error' => $error,
-            'flashes_html' => $this->renderView('front/_includes/_flash_messages.html.twig')
+            'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig')
         ]);
     }
 
     /**
+     * @param Request $request
      * @return Response
-     * @internal param Request $request
+     * @throws \Twig_Error
      * @Route("/vote_on_comment", name="front_blog_vote_on_comment")
      */
-    public function voteOnCommentAction()
+    public function voteOnCommentAction(Request $request)
     {
         //TODO - kazdy moze hodnotit len raz
-        if (isset($_POST['id']) && isset($_POST['reaction'])) {
-            $comment = $this->comment_manager->vote($_POST['id'], $_POST['reaction']);
+        $commentId = $request->request->get('commentId');
+        if($commentId){
+            $comment = $this->commentManager->getComment($commentId);
+        }
+        $reaction = $request->request->get('reaction');
+        if (isset($comment) && isset($reaction)) {
+            $this->commentManager->voteOnComment($comment, $reaction);
 
             return new JsonResponse([
-                'html' => $this->renderView('front/blog/_comment.html.twig', ['comment' => $comment]),
+                'html' => $this->twig->render('front/blog/_comment.html.twig', ['comment' => $comment]),
                 'error' => false,
                 'message' => 'Thanks for voting!'
             ]);
@@ -117,16 +154,48 @@ class BlogController extends BaseController
      * @param string $url
      * @return Response
      */
-    public function BlogAction($url = '')
+    public function blogAction($url = '')
     {
-        $rubric = $this->rubric_manager->getRubricByUrl($url);
-        $rubrics = $this->rubric_manager->getBaseRubrics();
+        $rubric = $this->rubricManager->getRubricByUrl($url);
+        if(!$rubric){
+            $rubric = $this->rubricManager->getRubric(1);
+        }
         $articles = $rubric->getArticles();
 
-        return $this->render('front/blog/blog_index.html.twig', [
-            'rubrics' => $rubrics,
+        return $this->twig->renderResponse('front/blog/blog_index.html.twig', [
             'articles' => $articles,
-            'selected_rubric' => $rubric
+            'selectedRubric' => $rubric
+        ]);
+    }
+
+    public function renderSidebarAction($selectedRubric)
+    {
+        $rubrics = $this->rubricManager->getBaseRubrics();
+
+        return $this->twig->renderResponse('front/blog/_sidebar.html.twig', [
+            'rubrics' => $rubrics,
+            'selectedRubric' => $selectedRubric
+        ]);
+    }
+
+    /**
+     * @param int|null $parentId
+     * @return Response
+     * @Route("/render_comment_form/{parentId}", name="front_blog_render_comment_form")
+     */
+    public function renderCommentFormAction($parentId = null)
+    {
+        $comment = new Comment();
+        if($parentId){
+            $parent = $this->commentManager->getComment($parentId);
+            if($parent){
+                $comment->setParent($parent);
+            }
+        }
+        $commentForm = $this->formFactory->create(CommentType::class, $comment);
+        
+        return $this->twig->renderResponse('front/_includes/_comment_form.html.twig', [
+            'commentForm' => $commentForm->createView()
         ]);
     }
 }

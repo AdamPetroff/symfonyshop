@@ -7,7 +7,6 @@
 
 namespace AppBundle\Service;
 
-
 use AppBundle\Entity\Rubric;
 use AppBundle\Repository\RubricRepository;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -27,21 +26,57 @@ class RubricManager
     public function getRubricByUrl(string $url)
     {
         $rubric = $this->repository->findOneBy(['url' => $url]);
-        if(!$rubric){
-            //TODO - vytiahnut default rubriku z tabulky settings
-            $rubric = $this->repository->find(1);
-//            throw new NotFoundHttpException;
-        }
+
         return $rubric;
     }
 
+    public function getRubric(int $rubricId): Rubric
+    {
+        return $this->repository->find($rubricId);
+    }
+
+    /**
+     * @return Rubric[]
+     */
     public function getBaseRubrics()
     {
-        return $this->repository->query('r', ['where' => 'r.parent is null']);
+        return $this->repository->findRubricsWithoutParent();
     }
 
     public function save(Rubric $rubric)
     {
-        $this->repository->flush($rubric);
+        $this->repository->saveRubric($rubric);
+    }
+
+    /**
+     * @return Rubric[]
+     */
+    public function getRubricsList()
+    {
+        $baseRubrics = $this->getBaseRubrics();
+        $array = [];
+        $callback = function(Rubric $rubric, $callback) use(&$array){
+            foreach ($rubric->getChildren() as $child){
+                if(!in_array($rubric, $array)){
+                    $array[$rubric->getId()] = $rubric;
+                }
+                $callback($child, $callback);
+            }
+        };
+        foreach($baseRubrics as $baseRubric){
+            $array[$baseRubric->getId()] = $baseRubric;
+            $callback($baseRubric, $callback);
+        }
+        
+        return $array;
+    }
+
+    /**
+     * @param Rubric $rubric
+     * @return Rubric[]
+     */
+    public function getPotentialParents(Rubric $rubric)
+    {
+        return $this->repository->findNotUnderRubric($rubric);
     }
 }
