@@ -11,7 +11,7 @@
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
-                    {% if app.getUser() %}
+                    {% if is_granted('ROLE_ADMIN') %}
                         <li><a href="{{ logout_path() }}">Logout</a></li>
                     {% endif %}
                     <li><a href="{{ path('admin_blog_index') }}">Blog</a></li>

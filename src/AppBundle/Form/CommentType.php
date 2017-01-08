@@ -50,6 +50,9 @@ class CommentType extends AbstractType
                 }
             },
             function($commentId){
+                if(!$commentId){
+                    return null;
+                }
                 return $this->commentManager->getComment($commentId);
             }
         ));

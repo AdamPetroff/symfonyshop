@@ -12,7 +12,7 @@
             <div class="col-md-4">
                 <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=1>Vote up</button>
                 <button class="js-vote-on-comment" data-comment-id="{{ comment.id }}" data-href="{{ path('front_blog_vote_on_comment') }}" data-reaction=0>Vote down</button>
-                <span>{{ comment.votes }}</span>
+                <span>{{ comment.voting }}</span>
             </div>
         </div>
         <div class="row">

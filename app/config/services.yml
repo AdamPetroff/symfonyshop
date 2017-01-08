@@ -26,12 +26,31 @@ services:
         tags:
             - { name: form.type, alias: app_bundle_comment_type }
 
+    app.form.admin_login_type:
+        class: AppBundle\Form\AdminLoginType
+        tags:
+            - { name: form.type, alias: app_bundle_admin_login_type }
+
+    app.form.user_login_type:
+        class: AppBundle\Form\UserLoginType
+        tags:
+            - { name: form.type, alias: app_bundle_user_login_type }
+
+    app.form.user_registration_type:
+        class: AppBundle\Form\UserRegistrationType
+        tags:
+            - { name: form.type, alias: app_bundle_user_registration_type }
+
     app.service.rubric_manager:
         class: AppBundle\Service\RubricManager
         arguments: ['@doctrine']
 
     app.service.comment_manager:
         class: AppBundle\Service\CommentManager
+        arguments: ['@doctrine']
+
+    app.service.comment_vote_manager:
+        class: AppBundle\Service\CommentVoteManager
         arguments: ['@doctrine']
 
     app.service.article_manager:
@@ -41,3 +60,19 @@ services:
     app.service.admin_manager:
         class: AppBundle\Service\AdminManager
         arguments: ['@doctrine', '@security.password_encoder']
+
+    app.service.user_manager:
+        class: AppBundle\Service\UserManager
+        arguments: ['@doctrine', '@security.password_encoder']
+
+    app.security.admin_login_authenticator:
+        class: AppBundle\Security\AdminLoginAuthenticator
+        autowire: true
+
+    app.security.user_login_authenticator:
+        class: AppBundle\Security\UserLoginAuthenticator
+        autowire: true
+
+    app.utils.security_utils:
+        class: AppBundle\Utils\SecurityUtils
+        arguments: ['@request_stack']

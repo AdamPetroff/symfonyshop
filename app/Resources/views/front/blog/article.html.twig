@@ -19,7 +19,7 @@
     </div>
 
     <div id="js-all-comments">
-        {% include('front/blog/_all_comments.html.twig') %}
+        {% include('front/_includes/_all_comments.html.twig') %}
     </div>
 
     <script>
@@ -43,7 +43,8 @@
                 e.preventDefault();
                 postForm( $(this), function(data){
                     if(!data.error){
-                        $('#js-all-comments').html(data.comments_html)
+                        $('#js-all-comments').html(data.comments_html);
+                        $('#article-comment-form #comment_text, #comment_posted_by').val('');
                     }
                     $('#js-flash-messages-wrapper').html(data.flashes_html);
                 });
@@ -62,7 +63,10 @@
                     $(this).data('href'),
                     {reaction: $(this).data('reaction'), commentId: $(this).data('comment-id')},
                     function (data) {
-                        if(data.html){
+                        if(data.error){
+                            alert(data.message);
+                        }
+                        if(!data.error && data.html){
                             $wrapper.html(data.html);
                         }
                     }

@@ -31,7 +31,6 @@ class HomepageController extends Controller
      */
     public function indexAction()
     {
-        $this->addFlash('notice', 'asd');
         return $this->twig->renderResponse('admin/homepage/index.html.twig');
     }
 }

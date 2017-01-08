@@ -5,35 +5,50 @@ parameters:
 security:
 
     encoders:
+        AppBundle\Entity\Admin: bcrypt
         AppBundle\Entity\User: bcrypt
 
     role_hierarchy:
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     providers:
-        my_provider:
+        admin_provider:
+            entity:
+                class: AppBundle:Admin
+                property: username
+        user_provider:
             entity:
                 class: AppBundle:User
-                property: username
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        admin:
+            pattern: ^/admin/
+            provider: admin_provider
             anonymous: ~
-            form_login:
-                login_path: admin_login
-                check_path: admin_login
-                default_target_path: admin_blog_index
+            guard:
+                authenticators:
+                    - app.security.admin_login_authenticator
             logout:
                 path: /admin/logout
                 target: '%admin_logout_target%'
                 success_handler: admin_logout_success_handler
 
+        user:
+            pattern: ^/
+            provider: user_provider
+            anonymous: ~
+            guard:
+                authenticators:
+                    - app.security.user_login_authenticator
+            logout:
+                path: /logout
+                target: /
 
     access_control:
         - { path: ^/admin/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/forgotten_password, role: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/admin/, role: ROLE_ADMIN }

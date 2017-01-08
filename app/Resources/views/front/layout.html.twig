@@ -12,15 +12,20 @@
             <ul class="nav navbar-nav">
                 <li><a href="{{ path('front_homepage') }}">Homepage</a></li>
                 <li><a href="{{ path('front_blog_index') }}">Blog</a></li>
+                {% if is_granted('ROLE_USER') %}
+                    <li><a href="{{ logout_path() }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ path('front_login') }}">Login</a></li>
+                    <li><a href="{{ path('front_register') }}">Register</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
     <div id="js-flash-messages-wrapper">
         {% include 'front/_includes/_flash_messages.html.twig' %}
     </div>
-    <div class="container-fluid">
-        {% block content %}{% endblock %}
-    </div>
+    {% block containerFluid %}{% endblock %}
+    {% block container %}{% endblock %}
     <footer class="text-center">
         This is a footer
     </footer>

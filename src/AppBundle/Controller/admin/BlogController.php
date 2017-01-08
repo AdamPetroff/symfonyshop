@@ -18,6 +18,7 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class BlogController extends Controller
 {
@@ -41,13 +42,18 @@ class BlogController extends Controller
      * @var FormFactory
      */
     private $formFactory;
+    /**
+     * @var Session
+     */
+    private $session;
 
     public function __construct(
         TwigEngine $twig, 
         ArticleManager $articleManager,
         RubricManager $rubricManager,
         CommentManager $commentManager,
-        FormFactory $formFactory
+        FormFactory $formFactory,
+        Session $session
     )
     {
         $this->articleManager = $articleManager;
@@ -55,6 +61,7 @@ class BlogController extends Controller
         $this->commentManager = $commentManager;
         $this->twig = $twig;
         $this->formFactory = $formFactory;
+        $this->session = $session;
     }
 
     /**
@@ -88,13 +95,13 @@ class BlogController extends Controller
         $deleteForm->handleRequest($request);
         if($deleteForm->isSubmitted()){
             $this->articleManager->deleteArticle($article);
-            $this->addFlash('success', 'Article was deleted successfully');
+            $this->session->getFlashBag()->add('success', 'Article was deleted successfully');
             return $this->redirectToRoute('admin_blog_index');
         }
         
         if($form->isSubmitted() && $form->isValid()){
             $this->articleManager->saveArticle($form->getData());
-            $this->addFlash('success', 'The item was saved successfully');
+            $this->session->getFlashBag()->add('success', 'The item was saved successfully');
             
             return $this->redirectToRoute('admin_blog_index');
         }
@@ -118,7 +125,7 @@ class BlogController extends Controller
 
         if($form->isSubmitted() && $form->isValid()){
             $this->articleManager->saveArticle($form->getData());
-            $this->addFlash('success', 'The item was saved successfully');
+            $this->session->getFlashBag()->add('success', 'The item was saved successfully');
 
             return $this->redirectToRoute('admin_blog_index');
         }
@@ -141,7 +148,7 @@ class BlogController extends Controller
 
         if($form->isSubmitted() && $form->isValid()){
             $this->rubricManager->save($form->getData());
-            $this->addFlash('success', 'The item was saved successfully');
+            $this->session->getFlashBag()->add('success', 'The item was saved successfully');
             
             return $this->redirectToRoute('admin_blog_index');
         }
@@ -165,7 +172,7 @@ class BlogController extends Controller
 
         if($form->isSubmitted() && $form->isValid()){
             $this->rubricManager->save($form->getData());
-            $this->addFlash('success', 'The item was saved successfully');
+            $this->session->getFlashBag()->add('success', 'The item was saved successfully');
 
             return $this->redirectToRoute('admin_blog_index');
         }
@@ -189,7 +196,7 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/admin/delete_comment", name="admin_blog_delete_comment")
+     * @Route("/admin/delete_comment", name="admin_blog_delete_comment", condition="request.isXmlHttpRequest()")
      * @param Request $request
      * @return JsonResponse
      * @throws \Twig_Error
@@ -201,15 +208,15 @@ class BlogController extends Controller
         $comment = $this->commentManager->getComment($commentId);
         if($comment){
             if($this->commentManager->deleteComment($comment)){
-                $this->addFlash('success', 'Comment was deleted successfully');
+                $this->session->getFlashBag()->add('success', 'Comment was deleted successfully');
                 $error = false;
             }
             else{
-                $this->addFlash('error', 'Comment could not be deleted');
+                $this->session->getFlashBag()->add('error', 'Comment could not be deleted');
             }
         }   
         else{
-            $this->addFlash('error', 'Comment was not found');
+            $this->session->getFlashBag()->add('error', 'Comment was not found');
         }
         return new JsonResponse([
             'error' => $error,

@@ -9,10 +9,10 @@
                 </b>
             </div>
             <div class="col-md-2">
-                <span>Votes: {{ comment.votes }}</span>
+                <span>Voting: {{ comment.voting }}</span>
             </div>
             <div class="col-md-4">
-                <button class="js-delete-comment"  data-href="{{ path('admin_blog_delete_comment') }}" data-id="{{ comment.id }}">Delete</button>
+                <button class="js-delete-comment btn btn-danger"  data-href="{{ path('admin_blog_delete_comment') }}" data-id="{{ comment.id }}">Delete</button>
             </div>
         </div>
         <div class="row">
@@ -35,6 +35,7 @@
 {% endmacro %}
 
 {% block content %}
+    <h1>Comments management</h1>
     {% for comment in comments %}
         {{ _self.commentLayout(comment) }}
     {% endfor %}

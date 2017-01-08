@@ -10,6 +10,7 @@ namespace AppBundle\Service;
 
 use AppBundle\Entity\Article;
 use AppBundle\Entity\Comment;
+use AppBundle\Entity\User;
 use AppBundle\Repository\CommentRepository;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,21 +31,6 @@ class CommentManager
     {
         $this->repository = $doctrine->getRepository(Comment::class);
         $this->doctrine = $doctrine;
-    }
-
-    /**
-     * @param Comment $comment
-     * @param bool $reaction
-     * @return Comment
-     */
-    public function voteOnComment(Comment $comment, bool $reaction)
-    {
-        if ($reaction) {
-            $comment->setVotes($comment->getVotes() + 1);
-        } elseif (!$reaction) {
-            $comment->setVotes($comment->getVotes() - 1);
-        }
-        $this->repository->saveComment($comment);
     }
 
     public function postComment(Comment $comment, Article $article)

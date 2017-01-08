@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -40,7 +41,7 @@ class Comment
     protected $created_at;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\CommentVote", mappedBy="comment", cascade={"remove"})
      */
     protected $votes;
 
@@ -53,12 +54,7 @@ class Comment
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="parent", cascade={"remove"})
      */
     protected $children;
-
-
-    public function __construct()
-    {
-        $this->setVotes(0);
-    }
+    
 
     /**
      * @return mixed
@@ -117,7 +113,7 @@ class Comment
     }
 
     /**
-     * @return mixed
+     * @return CommentVote[]
      */
     public function getVotes()
     {
@@ -130,6 +126,20 @@ class Comment
     public function setVotes($votes)
     {
         $this->votes = $votes;
+    }
+
+    public function getVoting() : int
+    {
+        $voting = 0;
+        foreach ($this->getVotes() ?? [] as $vote) {
+            if($vote->getReaction()){
+                $voting ++;
+            }
+            else{
+                $voting --;
+            }
+        }
+        return $voting;
     }
 
     /**

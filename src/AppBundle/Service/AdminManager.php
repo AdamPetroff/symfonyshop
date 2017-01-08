@@ -8,15 +8,16 @@
 namespace AppBundle\Service;
 
 
-use AppBundle\Entity\User;
-use AppBundle\Repository\UserRepository;
+use AppBundle\Entity\Admin;
+use AppBundle\Repository\AdminRepository;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class AdminManager
 {
     /**
-     * @var UserRepository
+     * @var AdminRepository
      */
     protected $repository;
     /**
@@ -30,7 +31,7 @@ class AdminManager
 
     public function __construct(Registry $doctrine, UserPasswordEncoder $encoder)
     {
-        $this->repository = $doctrine->getRepository(User::class);
+        $this->repository = $doctrine->getRepository(Admin::class);
         $this->doctrine = $doctrine;
         $this->encoder = $encoder;
     }
@@ -40,11 +41,16 @@ class AdminManager
         return $this->repository->findOneBy(['username' => $username]);
     }
 
-    public function assignNewPassword(User $user) : string
+    public function checkPassword(UserInterface $admin, string $enteredPassword)
+    {
+        return $this->encoder->isPasswordValid($admin, $enteredPassword);
+    }
+
+    public function assignNewPassword(Admin $admin) : string
     {
         $newPassword = substr(md5(rand()), 0, 7);
-        $user->setPassword($this->encoder->encodePassword($user, $newPassword));
-        $this->repository->saveUser($user);
+        $admin->setPassword($this->encoder->encodePassword($admin, $newPassword));
+        $this->repository->saveUser($admin);
         
         return $newPassword;
     }
@@ -54,14 +60,14 @@ class AdminManager
         return $this->repository->findAll();
     }
 
-    public function save(User $user)
+    public function save(Admin $admin)
     {
-        $this->repository->saveUser($user);
+        $this->repository->saveUser($admin);
     }
 
-    public function saveNew(User $user)
+    public function saveNew(Admin $admin)
     {
-        $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
-        $this->repository->saveUser($user);
+        $admin->setPassword($this->encoder->encodePassword($admin, $admin->getPassword()));
+        $this->repository->saveUser($admin);
     }
 }

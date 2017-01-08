@@ -5,9 +5,11 @@ namespace AppBundle\Controller\Front;
 use AppBundle\Entity\Article;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Rubric;
+use AppBundle\Entity\User;
 use AppBundle\Form\CommentType;
 use AppBundle\Service\ArticleManager;
 use AppBundle\Service\CommentManager;
+use AppBundle\Service\CommentVoteManager;
 use AppBundle\Service\RubricManager;
 use Doctrine\ORM\Mapping as ORM;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,6 +19,9 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 
 class BlogController extends Controller
@@ -41,13 +46,33 @@ class BlogController extends Controller
      * @var FormFactory
      */
     private $formFactory;
+    /**
+     * @var Session
+     */
+    private $session;
+    /**
+     * @var AuthorizationChecker
+     */
+    private $authorizationChecker;
+    /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+    /**
+     * @var CommentVoteManager
+     */
+    private $commentVoteManager;
 
     public function __construct(
         TwigEngine $twig, 
         CommentManager $commentManager, 
         RubricManager $rubricManager,
         ArticleManager $articleManager,
-        FormFactory $formFactory
+        FormFactory $formFactory,
+        Session $session,
+        AuthorizationChecker $authorizationChecker,
+        TokenStorage $tokenStorage,
+        CommentVoteManager $commentVoteManager
     )
     {
         $this->commentManager = $commentManager;
@@ -55,6 +80,10 @@ class BlogController extends Controller
         $this->twig = $twig;
         $this->articleManager = $articleManager;
         $this->formFactory = $formFactory;
+        $this->session = $session;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage = $tokenStorage;
+        $this->commentVoteManager = $commentVoteManager;
     }
 
     /**
@@ -77,7 +106,7 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/post_comment", name="front_blog_post_comment")
+     * @Route("/blog/post_comment", name="front_blog_post_comment", condition="request.isXmlHttpRequest()")
      * @param Request $request
      * @return JsonResponse
      */
@@ -95,12 +124,12 @@ class BlogController extends Controller
         if($form->isSubmitted() && $form->isValid() && isset($article)){
             $this->commentManager->postComment($form->getData(), $article);
             $error = false;
-            $this->addFlash('success', 'Thanks for Commenting');
+            $this->session->getFlashBag()->add('success', 'Thanks for Commenting');
             if($article){
                 return new JsonResponse([
                     'error' => $error,
                     'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig'),
-                    'comments_html' => $this->twig->render('front/blog/_all_comments.html.twig', [
+                    'comments_html' => $this->twig->render('front/_includes/_all_comments.html.twig', [
                         'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article)
                     ])
                 ]);
@@ -108,7 +137,7 @@ class BlogController extends Controller
                 
         }
         else{
-            $this->addFlash('error', 'The comment could not be posted');
+            $this->session->getFlashBag()->add('error', 'The comment could not be posted');
         }
         
         return new JsonResponse([
@@ -121,21 +150,37 @@ class BlogController extends Controller
      * @param Request $request
      * @return Response
      * @throws \Twig_Error
-     * @Route("/vote_on_comment", name="front_blog_vote_on_comment")
+     * @Route("/vote_on_comment", name="front_blog_vote_on_comment", condition="request.isXmlHttpRequest()")
      */
     public function voteOnCommentAction(Request $request)
     {
-        //TODO - kazdy moze hodnotit len raz
+        $user = $this->tokenStorage->getToken()->getUser();
+        if(!$this->authorizationChecker->isGranted('ROLE_USER') || !$user instanceof  User){
+            return new JsonResponse([
+                'error' => true,
+                'type' => 'unauthorized',
+                'message' => 'You have to be logged in to vote on comments'
+            ]);    
+        }
+        
         $commentId = $request->request->get('commentId');
         if($commentId){
             $comment = $this->commentManager->getComment($commentId);
         }
         $reaction = $request->request->get('reaction');
+        
+        
         if (isset($comment) && isset($reaction)) {
-            $this->commentManager->voteOnComment($comment, $reaction);
+            if($this->commentVoteManager->hasUserVotedOnComment($user, $comment)){
+                return new JsonResponse([
+                    'error' => true,
+                    'message' => 'You have already voted on this comment'
+                ]);
+            }
+            $this->commentVoteManager->voteOnComment($user, $comment, $reaction);
 
             return new JsonResponse([
-                'html' => $this->twig->render('front/blog/_comment.html.twig', ['comment' => $comment]),
+                'html' => $this->twig->render('front/_includes/_comment.html.twig', ['comment' => $comment]),
                 'error' => false,
                 'message' => 'Thanks for voting!'
             ]);
@@ -144,7 +189,7 @@ class BlogController extends Controller
         {
             return new JsonResponse([
                 'error' => true,
-                'message' => 'Bad data'
+                'message' => 'So sorry. The operation has failed due to bad data.'
             ]);
         }
     }
@@ -172,7 +217,7 @@ class BlogController extends Controller
     {
         $rubrics = $this->rubricManager->getBaseRubrics();
 
-        return $this->twig->renderResponse('front/blog/_sidebar.html.twig', [
+        return $this->twig->renderResponse('front/_includes/_sidebar.html.twig', [
             'rubrics' => $rubrics,
             'selectedRubric' => $selectedRubric
         ]);
