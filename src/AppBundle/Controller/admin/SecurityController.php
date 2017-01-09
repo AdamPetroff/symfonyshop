@@ -58,8 +58,7 @@ class SecurityController extends Controller
         SecurityUtils $securityUtils,
         Session $session,
         Router $router
-    )
-    {
+    ) {
         $this->adminManager = $adminManager;
         $this->authenticationUtils = $utils;
         $this->twig = $twig;
@@ -80,7 +79,7 @@ class SecurityController extends Controller
         $loginForm = $this->formFactory->create(AdminLoginType::class, ['_username' => $lastUsername]);
         $fromLogout = $request->query->get('from_logout');
 
-        if($fromLogout){
+        if ($fromLogout) {
             $this->session->getFlashBag()->add('notice', 'You have been logged out successfully');
         }
 
@@ -98,15 +97,18 @@ class SecurityController extends Controller
     {
         $form = $this->formFactory->create(AdminForgottenPassword::class);
         $form->handleRequest($request);
-        if($form->isValid()){
+        if ($form->isValid()) {
             $user = $this->adminManager->findByUsername($form->getData()['username']);
-            if($user){
+            if ($user) {
                 $newPassword = $this->adminManager->assignNewPassword($user);
-                //TODO - send new password in email
-                $this->session->getFlashBag()->add('success', "Your password has been successfully changed. New password : '$newPassword'");
+                if (mail($user->getEmail(), 'New password', 'Your new password is ' . $newPassword)) {
+                    $this->session->getFlashBag()->add('success', "Your new password has been sent to your email.");
+                } else {
+                    $this->session->getFlashBag()->add('success',
+                        "There was a problem on the server and the mail could not be sent. Please try to resubmit the form");
+                }
                 return $this->redirect($this->router->generate('admin_login'));
-            }
-            else{
+            } else {
                 $form->addError(new FormError('The user has not been found. Please check your spelling.'));
             }
         }
@@ -118,9 +120,10 @@ class SecurityController extends Controller
     /**
      * @return Response
      */
-    public function adminsAction(){
+    public function adminsAction()
+    {
         $admins = $this->adminManager->findAll();
-        
+
         return $this->twig->renderResponse(':admin/security:admins.html.twig', [
             'admins' => $admins
         ]);
@@ -135,13 +138,13 @@ class SecurityController extends Controller
     {
         $form = $this->formFactory->create(AdminAccountType::class, $user);
         $form->handleRequest($request);
-        
-        if($form->isSubmitted() && $form->isValid()){
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->adminManager->save($form->getData());
-            $this->session->getFlashBag()->add('notice','success!!');
+            $this->session->getFlashBag()->add('notice', 'success!!');
             return $this->redirect($this->router->generate('admin_index'));
         }
-        
+
         return $this->twig->renderResponse('admin/security/adminAccount.html.twig', [
             'form' => $form->createView(),
             'subject' => $user
@@ -157,10 +160,10 @@ class SecurityController extends Controller
         $form = $this->formFactory->create(NewAdminType::class);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->adminManager->saveNew($form->getData());
-            $this->session->getFlashBag()->add('notice','New admin has been saved');
-            
+            $this->session->getFlashBag()->add('notice', 'New admin has been saved');
+
             return $this->redirect($this->router->generate('admin_index'));
         }
 

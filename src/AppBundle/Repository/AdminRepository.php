@@ -7,6 +7,9 @@ use Doctrine\ORM\EntityRepository;
 
 class AdminRepository extends EntityRepository
 {
+    /**
+     * @param Admin $admin
+     */
     public function saveUser(Admin $admin)
     {
         $this->getEntityManager()->persist($admin);

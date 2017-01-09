@@ -27,7 +27,7 @@ class ArticleType extends AbstractType
 
         $this->rubricManager = $rubricManager;
     }
-    
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -48,11 +48,12 @@ class ArticleType extends AbstractType
                 'choices' => $this->rubricManager->getRubricsList(),
                 'placeholder' => '-- unassigned --'
             ])
-            ->add('tmpMainImgFile', FileType::class, ['required' => false, 'label' => 'Main image', 'data_class' => null])
+            ->add('tmpMainImgFile', FileType::class,
+                ['required' => false, 'label' => 'Main image', 'data_class' => null])
             ->add('submit', SubmitType::class, [
-                'attr' => ['formnovalidate'=>true]
+                'attr' => ['formnovalidate' => true]
             ]);
-        
+
         return $builder;
     }
 

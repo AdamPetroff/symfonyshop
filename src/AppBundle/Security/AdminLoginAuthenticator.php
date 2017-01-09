@@ -33,7 +33,7 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @var RouterInterface
      */
     private $router;
-    
+
     public function __construct(FormFactory $formFactory, AdminManager $adminManager, RouterInterface $router)
     {
         $this->formFactory = $formFactory;
@@ -41,10 +41,15 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
         $this->router = $router;
     }
 
+    /**
+     * @param Request $request
+     * @return array|null
+     */
     public function getCredentials(Request $request)
     {
-        $isLoginSubmit = $this->router->generate('admin_login', [], RouterInterface::ABSOLUTE_URL) == $request->getUriForPath($request->getPathInfo()) && $request->getMethod() == 'POST';
-        if(!$isLoginSubmit){
+        $isLoginSubmit = $this->router->generate('admin_login', [],
+                RouterInterface::ABSOLUTE_URL) == $request->getUriForPath($request->getPathInfo()) && $request->getMethod() == 'POST';
+        if (!$isLoginSubmit) {
             return null;
         }
         $form = $this->formFactory->create(AdminLoginType::class);
@@ -55,11 +60,21 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
         return $form->getData();
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return UserInterface
+     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         return $userProvider->loadUserByUsername($credentials['_username']);
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserInterface $user
+     * @return bool
+     */
     public function checkCredentials($credentials, UserInterface $user)
     {
         $password = $credentials['_password'];
@@ -67,11 +82,17 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
         return $this->adminManager->checkPassword($user, $password);
     }
 
+    /**
+     * @return string
+     */
     protected function getLoginUrl()
     {
         return $this->router->generate('admin_login');
     }
 
+    /**
+     * @return string
+     */
     protected function getDefaultSuccessRedirectUrl()
     {
         return $this->router->generate('admin_index');

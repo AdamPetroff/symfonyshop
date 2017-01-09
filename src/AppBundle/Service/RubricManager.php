@@ -23,6 +23,10 @@ class RubricManager
         $this->repository = $doctrine->getRepository(Rubric::class);
     }
 
+    /**
+     * @param string $url
+     * @return Rubric
+     */
     public function getRubricByUrl(string $url)
     {
         $rubric = $this->repository->findOneBy(['url' => $url]);
@@ -30,6 +34,10 @@ class RubricManager
         return $rubric;
     }
 
+    /**
+     * @param int $rubricId
+     * @return Rubric
+     */
     public function getRubric(int $rubricId): Rubric
     {
         return $this->repository->find($rubricId);
@@ -43,6 +51,9 @@ class RubricManager
         return $this->repository->findRubricsWithoutParent();
     }
 
+    /**
+     * @param Rubric $rubric
+     */
     public function save(Rubric $rubric)
     {
         $this->repository->saveRubric($rubric);
@@ -55,19 +66,19 @@ class RubricManager
     {
         $baseRubrics = $this->getBaseRubrics();
         $array = [];
-        $callback = function(Rubric $rubric, $callback) use(&$array){
-            foreach ($rubric->getChildren() as $child){
-                if(!in_array($rubric, $array)){
+        $callback = function (Rubric $rubric, $callback) use (&$array) {
+            foreach ($rubric->getChildren() as $child) {
+                if (!in_array($rubric, $array)) {
                     $array[$rubric->getId()] = $rubric;
                 }
                 $callback($child, $callback);
             }
         };
-        foreach($baseRubrics as $baseRubric){
+        foreach ($baseRubrics as $baseRubric) {
             $array[$baseRubric->getId()] = $baseRubric;
             $callback($baseRubric, $callback);
         }
-        
+
         return $array;
     }
 

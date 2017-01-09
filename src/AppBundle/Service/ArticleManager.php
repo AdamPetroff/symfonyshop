@@ -20,7 +20,7 @@ class ArticleManager
      * @var ArticleRepository
      */
     protected $repository;
-    
+
     public function __construct(Registry $doctrine)
     {
         $this->repository = $doctrine->getRepository(Article::class);
@@ -37,21 +37,27 @@ class ArticleManager
         $this->saveMainImageFile($article);
     }
 
+    /**
+     * @param Article $article
+     */
     public function assignUniqueUrl(Article $article)
     {
-        if(!empty($article->getUrl())) {
+        if (!empty($article->getUrl())) {
             return;
         }
         $article->setUrl(StaticStringy::slugify($article->getName()));
 
-        while(!$this->repository->isArticleUrlUnique($article)){
+        while (!$this->repository->isArticleUrlUnique($article)) {
             $article->setUrl(Strings::incrementDoubleDashUrl($article->getUrl()));
         }
     }
 
+    /**
+     * @param Article $entity
+     */
     public function saveMainImageName(Article $entity)
     {
-        if($entity->getTmpMainImgFile() instanceof UploadedFile){
+        if ($entity->getTmpMainImgFile() instanceof UploadedFile) {
             /** @var UploadedFile $file */
             $file = $entity->getTmpMainImgFile();
             $newName = md5(uniqid()) . '.' . $file->guessExtension();
@@ -61,12 +67,12 @@ class ArticleManager
 
     public function saveMainImageFile(Article $entity)
     {
-        if($entity->getTmpMainImgFile() instanceof UploadedFile){
+        if ($entity->getTmpMainImgFile() instanceof UploadedFile) {
             /** @var UploadedFile $mainImg */
             $mainImg = $entity->getTmpMainImgFile();
             $newName = $entity->getMainImg();
             $path = WEB_DIR . $entity->getImageDir();
-            if(!is_dir($path)){
+            if (!is_dir($path)) {
                 mkdir($path);
             }
             $mainImg->move($path, $newName);
@@ -90,7 +96,7 @@ class ArticleManager
     {
         $article = $this->repository->find($articleId);
 
-        if(!$article){
+        if (!$article) {
             return null;
         }
         return $article;

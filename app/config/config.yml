@@ -69,6 +69,8 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+    port: 2525
+    encryption: tls
 
 # Tracy
 kutny_tracy:

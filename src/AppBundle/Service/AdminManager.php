@@ -36,35 +36,57 @@ class AdminManager
         $this->encoder = $encoder;
     }
 
+    /**
+     * @param string $username
+     * @return Admin
+     */
     public function findByUsername(string $username)
     {
         return $this->repository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * @param UserInterface $admin
+     * @param string $enteredPassword
+     * @return bool
+     */
     public function checkPassword(UserInterface $admin, string $enteredPassword)
     {
         return $this->encoder->isPasswordValid($admin, $enteredPassword);
     }
 
+    /**
+     * @param Admin $admin
+     * @return string
+     */
     public function assignNewPassword(Admin $admin) : string
     {
         $newPassword = substr(md5(rand()), 0, 7);
         $admin->setPassword($this->encoder->encodePassword($admin, $newPassword));
         $this->repository->saveUser($admin);
-        
+
         return $newPassword;
     }
 
+    /**
+     * @return Admin[]|array
+     */
     public function findAll()
     {
         return $this->repository->findAll();
     }
 
+    /**
+     * @param Admin $admin
+     */
     public function save(Admin $admin)
     {
         $this->repository->saveUser($admin);
     }
 
+    /**
+     * @param Admin $admin
+     */
     public function saveNew(Admin $admin)
     {
         $admin->setPassword($this->encoder->encodePassword($admin, $admin->getPassword()));

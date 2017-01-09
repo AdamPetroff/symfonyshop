@@ -8,6 +8,7 @@
 namespace AppBundle\Security;
 
 
+use AppBundle\Entity\User;
 use AppBundle\Form\UserLoginType;
 use AppBundle\Service\AdminManager;
 use AppBundle\Service\UserManager;
@@ -34,7 +35,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @var RouterInterface
      */
     private $router;
-    
+
 
     public function __construct(FormFactory $formFactory, UserManager $userManager, RouterInterface $router)
     {
@@ -43,10 +44,17 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
         $this->router = $router;
     }
 
+    /**
+     * @param Request $request
+     * @return array|null
+     */
     public function getCredentials(Request $request)
     {
-        $isLoginSubmit = $this->router->generate('front_login', [], RouterInterface::ABSOLUTE_URL) == $request->getUriForPath($request->getPathInfo()) && $request->getMethod() == 'POST';
-        if(!$isLoginSubmit){
+        $isLoginSubmit = $this->router->generate(
+                'front_login', 
+                [],
+                RouterInterface::ABSOLUTE_URL) == $request->getUriForPath($request->getPathInfo()) && $request->getMethod() == 'POST';
+        if (!$isLoginSubmit) {
             return null;
         }
         $form = $this->formFactory->create(UserLoginType::class);
@@ -57,11 +65,21 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
         return $form->getData();
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return User
+     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         return $this->userManager->findByUsername($credentials['_username']);
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserInterface $user
+     * @return bool
+     */
     public function checkCredentials($credentials, UserInterface $user)
     {
         $password = $credentials['_password'];
@@ -69,11 +87,17 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
         return $this->userManager->checkPassword($user, $password);
     }
 
+    /**
+     * @return string
+     */
     protected function getLoginUrl()
     {
         return $this->router->generate('front_login');
     }
 
+    /**
+     * @return string
+     */
     protected function getDefaultSuccessRedirectUrl()
     {
         return $this->router->generate('front_homepage');

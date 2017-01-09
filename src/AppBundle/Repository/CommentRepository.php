@@ -15,12 +15,18 @@ use Doctrine\ORM\EntityRepository;
  */
 class CommentRepository extends EntityRepository
 {
+    /**
+     * @param Comment $comment
+     */
     public function saveComment(Comment $comment)
     {
         $this->getEntityManager()->persist($comment);
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @param Comment $comment
+     */
     public function deleteComment(Comment $comment)
     {
         $this->getEntityManager()->remove($comment);
@@ -32,13 +38,13 @@ class CommentRepository extends EntityRepository
      * @param string $orientation
      * @return array
      */
-    public function findArticleBaseCommentsOrderedByVotes(Article $article, string $orientation = 'DESC') : array
+    public function findArticleBaseCommentsOrderedByDate(Article $article, string $orientation = 'DESC') : array
     {
         return $this->createQueryBuilder('c')
             ->where('c.article = :article')
             ->setParameter('article', $article)
             ->andWhere('c.parent IS NULL')
-//            ->orderBy("c.votes", $orientation)
+            ->orderBy("c.created_at", $orientation)
             ->getQuery()
             ->getResult();
     }

@@ -38,19 +38,19 @@ class CommentType extends AbstractType
             ->setAction($this->router->getGenerator()->generate('front_blog_post_comment'))
             ->add('posted_by', TextType::class, ['label' => 'Your nickname'])
             ->add('text', TextareaType::class, ['label' => 'Comment'])
-            ->add('parent', HiddenType::class) 
+            ->add('parent', HiddenType::class)
             ->add('submit', SubmitType::class);
 
         $builder->get('parent')->addModelTransformer(new CallbackTransformer(
-            function(Comment $parent = null){
-                if($parent)
+            function (Comment $parent = null) {
+                if ($parent) {
                     return $parent->getId();
-                else{
+                } else {
                     return null;
                 }
             },
-            function($commentId){
-                if(!$commentId){
+            function ($commentId) {
+                if (!$commentId) {
                     return null;
                 }
                 return $this->commentManager->getComment($commentId);

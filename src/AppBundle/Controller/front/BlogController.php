@@ -62,8 +62,8 @@ class BlogController extends Controller
     private $commentVoteManager;
 
     public function __construct(
-        TwigEngine $twig, 
-        CommentManager $commentManager, 
+        TwigEngine $twig,
+        CommentManager $commentManager,
         RubricManager $rubricManager,
         ArticleManager $articleManager,
         FormFactory $formFactory,
@@ -71,8 +71,7 @@ class BlogController extends Controller
         AuthorizationChecker $authorizationChecker,
         TokenStorage $tokenStorage,
         CommentVoteManager $commentVoteManager
-    )
-    {
+    ) {
         $this->commentManager = $commentManager;
         $this->rubricManager = $rubricManager;
         $this->twig = $twig;
@@ -96,7 +95,7 @@ class BlogController extends Controller
 
         return $this->twig->renderResponse('front/blog/article.html.twig', [
             'article' => $article,
-            'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article),
+            'comments' => $this->commentManager->findArticleBaseCommentsOrderedByDate($article),
             'comment_form' => $commentForm->createView(),
             'selectedRubric' => $article->getRubric()
         ]);
@@ -113,29 +112,28 @@ class BlogController extends Controller
         $form->handleRequest($request);
 
         $articleId = $request->request->get('article_id');
-        if($articleId){
+        if ($articleId) {
             $article = $this->articleManager->getArticle($articleId);
         }
-        
-        if($form->isSubmitted() && $form->isValid() && isset($article)){
+
+        if ($form->isSubmitted() && $form->isValid() && isset($article)) {
             $this->commentManager->postComment($form->getData(), $article);
             $error = false;
             $this->session->getFlashBag()->add('success', 'Thanks for Commenting');
-            if($article){
+            if ($article) {
                 return new JsonResponse([
                     'error' => $error,
                     'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig'),
                     'comments_html' => $this->twig->render('front/_includes/_all_comments.html.twig', [
-                        'comments' => $this->commentManager->findArticleBaseCommentsOrderedByVotes($article)
+                        'comments' => $this->commentManager->findArticleBaseCommentsOrderedByDate($article)
                     ])
                 ]);
             }
-                
-        }
-        else{
+
+        } else {
             $this->session->getFlashBag()->add('error', 'The comment could not be posted');
         }
-        
+
         return new JsonResponse([
             'error' => $error,
             'flashes_html' => $this->twig->render('front/_includes/_flash_messages.html.twig')
@@ -150,23 +148,23 @@ class BlogController extends Controller
     public function voteOnCommentAction(Request $request)
     {
         $user = $this->tokenStorage->getToken()->getUser();
-        if(!$this->authorizationChecker->isGranted('ROLE_USER') || !$user instanceof  User){
+        if (!$this->authorizationChecker->isGranted('ROLE_USER') || !$user instanceof User) {
             return new JsonResponse([
                 'error' => true,
                 'type' => 'unauthorized',
                 'message' => 'You have to be logged in to vote on comments'
-            ]);    
+            ]);
         }
-        
+
         $commentId = $request->request->get('commentId');
-        if($commentId){
+        if ($commentId) {
             $comment = $this->commentManager->getComment($commentId);
         }
         $reaction = $request->request->get('reaction');
-        
-        
+
+
         if (isset($comment) && isset($reaction)) {
-            if($this->commentVoteManager->hasUserVotedOnComment($user, $comment)){
+            if ($this->commentVoteManager->hasUserVotedOnComment($user, $comment)) {
                 return new JsonResponse([
                     'error' => true,
                     'message' => 'You have already voted on this comment'
@@ -179,9 +177,7 @@ class BlogController extends Controller
                 'error' => false,
                 'message' => 'Thanks for voting!'
             ]);
-        }
-        else
-        {
+        } else {
             return new JsonResponse([
                 'error' => true,
                 'message' => 'So sorry. The operation has failed due to bad data.'
@@ -196,7 +192,7 @@ class BlogController extends Controller
     public function blogAction($url = '')
     {
         $rubric = $this->rubricManager->getRubricByUrl($url);
-        if(!$rubric){
+        if (!$rubric) {
             $rubric = $this->rubricManager->getRubric(1);
         }
         $articles = $rubric->getArticles();
@@ -224,14 +220,14 @@ class BlogController extends Controller
     public function renderCommentFormAction($parentId = null)
     {
         $comment = new Comment();
-        if($parentId){
+        if ($parentId) {
             $parent = $this->commentManager->getComment($parentId);
-            if($parent){
+            if ($parent) {
                 $comment->setParent($parent);
             }
         }
         $commentForm = $this->formFactory->create(CommentType::class, $comment);
-        
+
         return $this->twig->renderResponse('front/_includes/_comment_form.html.twig', [
             'commentForm' => $commentForm->createView()
         ]);

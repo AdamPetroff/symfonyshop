@@ -24,25 +24,29 @@ class SecurityUtils
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * @return string
+     */
     public function getLastAdminUsername()
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request->attributes->has(self::LAST_ADMIN_USERNAME)) {
             return $request->attributes->get(self::LAST_ADMIN_USERNAME);
-        }
-        else{
+        } else {
             $session = $request->getSession();
             return null === $session ? '' : $session->get(self::LAST_ADMIN_USERNAME);
         }
     }
 
+    /**
+     * @return string
+     */
     public function getLastUserUsername()
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request->attributes->has(self::LAST_USER_USERNAME)) {
             return $request->attributes->get(self::LAST_USER_USERNAME);
-        }
-        else{
+        } else {
             $session = $request->getSession();
             return null === $session ? '' : $session->get(self::LAST_USER_USERNAME);
         }

@@ -91,13 +91,10 @@ class Admin implements \Serializable, UserInterface
      * Set username
      *
      * @param string $username
-     * @return Admin
      */
     public function setUsername($username)
     {
         $this->username = $username;
-
-        return $this;
     }
 
     /**
@@ -114,13 +111,10 @@ class Admin implements \Serializable, UserInterface
      * Set password
      *
      * @param string $password
-     * @return Admin
      */
     public function setPassword($password)
     {
         $this->password = $password;
-
-        return $this;
     }
 
     /**
@@ -137,13 +131,10 @@ class Admin implements \Serializable, UserInterface
      * Set email
      *
      * @param string $email
-     * @return Admin
      */
     public function setEmail($email)
     {
         $this->email = $email;
-
-        return $this;
     }
 
     /**
@@ -160,13 +151,10 @@ class Admin implements \Serializable, UserInterface
      * Set registrationDate
      *
      * @param \DateTime $registrationDate
-     * @return Admin
      */
     public function setRegistrationDate($registrationDate)
     {
         $this->registrationDate = $registrationDate;
-
-        return $this;
     }
 
     /**

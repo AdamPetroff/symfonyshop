@@ -17,7 +17,8 @@ class AdminAccountType extends AbstractType
         $builder
             ->add('username')
             ->add('email', EmailType::class, ['label' => 'E-mail'])
-            ->add('roles', ChoiceType::class, ['multiple' => true, 'choices' => ['admin' => 'ROLE_ADMIN', 'super admin' => 'ROLE_SUPER_ADMIN']])
+            ->add('roles', ChoiceType::class,
+                ['multiple' => true, 'choices' => ['admin' => 'ROLE_ADMIN', 'super admin' => 'ROLE_SUPER_ADMIN']])
             ->add('is_active', null, ['label' => 'Active'])
             ->add('submit', SubmitType::class);
 

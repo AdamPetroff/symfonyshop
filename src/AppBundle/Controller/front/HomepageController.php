@@ -9,9 +9,10 @@
 namespace AppBundle\Controller\front;
 
 
+use AppBundle\Entity\Admin;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\TwigBundle\TwigEngine;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class HomepageController extends Controller
 {
@@ -26,7 +27,7 @@ class HomepageController extends Controller
     }
 
     /**
-     * @Route("/", name="front_homepage")
+     * @return Response
      */
     public function defaultAction()
     {

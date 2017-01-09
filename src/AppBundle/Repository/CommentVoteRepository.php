@@ -14,6 +14,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class CommentVoteRepository extends EntityRepository
 {
+    /**
+     * @param User $user
+     * @param $comment
+     * @return array
+     */
     public function findByUserAndComment(User $user, $comment)
     {
         $qb = $this->createQueryBuilder('cv')
@@ -21,10 +26,13 @@ class CommentVoteRepository extends EntityRepository
             ->setParameter('user', $user)
             ->andWhere('cv.comment = :comment')
             ->setParameter('comment', $comment);
-        
+
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @param CommentVote $commentVote
+     */
     public function saveCommentVote(CommentVote $commentVote)
     {
         $this->getEntityManager()->persist($commentVote);

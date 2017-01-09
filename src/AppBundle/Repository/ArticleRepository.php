@@ -13,12 +13,18 @@ use Doctrine\ORM\EntityRepository;
  */
 class ArticleRepository extends EntityRepository
 {
+    /**
+     * @param Article $article
+     */
     public function saveArticle(Article $article)
     {
         $this->getEntityManager()->persist($article);
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return \AppBundle\Entity\Article[]
+     */
     public function findNonDeleted()
     {
         /**
@@ -26,8 +32,8 @@ class ArticleRepository extends EntityRepository
          */
         $all = $this->findAll();
         $count = count($all);
-        for($i = 0; $i < $count; $i++){
-            if($all[$i]->getDeleted()){
+        for ($i = 0; $i < $count; $i++) {
+            if ($all[$i]->getDeleted()) {
                 unset($all[$i]);
             }
         }
@@ -35,13 +41,17 @@ class ArticleRepository extends EntityRepository
         return $all;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function isArticleUrlUnique(Article $article)
     {
         $countQb = $this->createQueryBuilder('a')
             ->andWhere("a.url = :url")
             ->setParameter('url', $article->getUrl());
 
-        if($article->getId()){
+        if ($article->getId()) {
             $countQb->andWhere("a.id != :id")
                 ->setParameter('id', $article->getId());
         }
@@ -50,11 +60,11 @@ class ArticleRepository extends EntityRepository
             ->select('COUNT(a)')
             ->getQuery()
             ->getSingleScalarResult();
-        
-        if($count){
+
+        if ($count) {
             return false;
         }
-        
+
         return true;
     }
 }

@@ -30,28 +30,39 @@ class CommentManager
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * @param Comment $comment
+     * @param Article $article
+     */
     public function postComment(Comment $comment, Article $article)
     {
         $comment->setArticle($article);
         $this->repository->saveComment($comment);
     }
 
+    /**
+     * @param Comment $comment
+     * @return bool
+     */
     public function deleteComment(Comment $comment) : bool
     {
-        try{
+        try {
             $this->repository->deleteComment($comment);
-        }
-        catch(\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
         return true;
     }
 
+    /**
+     * @param int $commentId
+     * @return Comment
+     */
     public function getComment(int $commentId) : Comment
     {
         $comment = $this->repository->find($commentId);
 
-        if(!$comment){
+        if (!$comment) {
             return null;
         }
         return $comment;
@@ -61,10 +72,10 @@ class CommentManager
      * @param $article
      * @return array
      */
-    public function findArticleBaseCommentsOrderedByVotes($article) : array 
+    public function findArticleBaseCommentsOrderedByDate($article) : array
     {
-        $result = $this->repository->findArticleBaseCommentsOrderedByVotes($article);
+        $result = $this->repository->findArticleBaseCommentsOrderedByDate($article);
         return $result;
     }
-    
+
 }

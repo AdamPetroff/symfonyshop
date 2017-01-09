@@ -22,7 +22,7 @@ class AdminForgottenPassword extends AbstractType
             ->setMethod('POST')
             ->add('username', TextType::class, ['label' => 'Please enter your username'])
             ->add('submit', SubmitType::class);
-        
+
         return $builder;
     }
 }

@@ -32,22 +32,37 @@ class UserManager
         $this->encoder = $encoder;
     }
 
+    /**
+     * @param User $user
+     */
     public function save(User $user)
     {
         $this->repository->saveUser($user);
     }
 
+    /**
+     * @param User $user
+     */
     public function saveNew(User $user)
     {
         $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
         $this->repository->saveUser($user);
     }
 
+    /**
+     * @param string $username
+     * @return User
+     */
     public function findByUsername(string $username)
     {
         return $this->repository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * @param UserInterface $admin
+     * @param string $enteredPassword
+     * @return bool
+     */
     public function checkPassword(UserInterface $admin, string $enteredPassword)
     {
         return $this->encoder->isPasswordValid($admin, $enteredPassword);

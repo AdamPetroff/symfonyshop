@@ -31,16 +31,22 @@ class CommentVoteManager
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * @param User $user
+     * @param Comment $comment
+     * @return bool
+     */
     public function hasUserVotedOnComment(User $user, Comment $comment) : bool
     {
-        if(!empty($this->repository->findByUserAndComment($user, $comment))){
+        if (!empty($this->repository->findByUserAndComment($user, $comment))) {
             return true;
         }
-        
+
         return false;
     }
 
     /**
+     * @param User $user
      * @param Comment $comment
      * @param bool $reaction
      * @return Comment
@@ -53,5 +59,5 @@ class CommentVoteManager
         $commentVote->setReaction($reaction);
         $this->repository->saveCommentVote($commentVote);
     }
-    
+
 }

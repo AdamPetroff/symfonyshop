@@ -1,6 +1,5 @@
 admin_index:
     path: /
-    condition: request.isXmlHttpRequest()
     defaults:
         _controller: AppBundle:admin/Homepage:index
 
