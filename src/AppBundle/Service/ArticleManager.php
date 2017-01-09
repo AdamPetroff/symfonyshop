@@ -11,7 +11,6 @@ use AppBundle\Entity\Article;
 use AppBundle\Repository\ArticleRepository;
 use AppBundle\Utils\Strings;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\NoResultException;
 use Stringy\StaticStringy;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

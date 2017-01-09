@@ -4,7 +4,6 @@ namespace AppBundle\Controller\Front;
 
 use AppBundle\Entity\Article;
 use AppBundle\Entity\Comment;
-use AppBundle\Entity\Rubric;
 use AppBundle\Entity\User;
 use AppBundle\Form\CommentType;
 use AppBundle\Service\ArticleManager;
@@ -12,7 +11,6 @@ use AppBundle\Service\CommentManager;
 use AppBundle\Service\CommentVoteManager;
 use AppBundle\Service\RubricManager;
 use Doctrine\ORM\Mapping as ORM;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Form\FormFactory;
@@ -90,7 +88,6 @@ class BlogController extends Controller
      * @param Request $request
      * @param Article $article
      * @return Response
-     * @Route("/article/{url}", name="front_display_article")
      */
     public function displayArticleAction(Request $request, Article $article)
     {
@@ -106,7 +103,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/post_comment", name="front_blog_post_comment", condition="request.isXmlHttpRequest()")
      * @param Request $request
      * @return JsonResponse
      */
@@ -150,7 +146,6 @@ class BlogController extends Controller
      * @param Request $request
      * @return Response
      * @throws \Twig_Error
-     * @Route("/vote_on_comment", name="front_blog_vote_on_comment", condition="request.isXmlHttpRequest()")
      */
     public function voteOnCommentAction(Request $request)
     {
@@ -195,7 +190,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/{url}", name="front_blog_index")
      * @param string $url
      * @return Response
      */
@@ -226,7 +220,6 @@ class BlogController extends Controller
     /**
      * @param int|null $parentId
      * @return Response
-     * @Route("/render_comment_form/{parentId}", name="front_blog_render_comment_form")
      */
     public function renderCommentFormAction($parentId = null)
     {

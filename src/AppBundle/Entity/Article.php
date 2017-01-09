@@ -3,15 +3,10 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Repository\ArticleRepository;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Stringy\StaticStringy;
-use Stringy\Stringy;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

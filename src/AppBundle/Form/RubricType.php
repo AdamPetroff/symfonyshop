@@ -4,7 +4,6 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Rubric;
 use AppBundle\Service\RubricManager;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;

@@ -1,10 +1,8 @@
-app:
-    resource: "@AppBundle/Controller/Front/"
-    type:     annotation
+front:
+    resource: "front_routes.yml"
 
 admin:
-    resource: "@AppBundle/Controller/Admin/"
-    type:     annotation
+    resource: "admin_routes.yml"
     prefix:   /admin
 
 logout:

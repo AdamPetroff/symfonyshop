@@ -9,7 +9,6 @@ use AppBundle\Form\RubricType;
 use AppBundle\Service\ArticleManager;
 use AppBundle\Service\CommentManager;
 use AppBundle\Service\RubricManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\TwigBundle\TwigEngine;
@@ -65,7 +64,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog", name="admin_blog_index")
      * @return Response
      */
     public function indexAction(){
@@ -82,7 +80,6 @@ class BlogController extends Controller
      * @param Request $request
      * @param Article $article
      * @return Response
-     * @Route("/blog/article/{id}", name="admin_blog_edit_article")
      */
     public function editArticleAction(Request $request, Article $article){
         $form = $this->formFactory->create(ArticleType::class, $article);
@@ -114,7 +111,7 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/new_article", name="admin_blog_new_article")
+     * @Route("", name="")
      * @param Request $request
      * @return Response
      */
@@ -139,7 +136,6 @@ class BlogController extends Controller
      * @param Request $request
      * @param Rubric $rubric
      * @return Response
-     * @Route("/blog/rubric/{id}", name="admin_blog_edit_rubric")
      */
     public function editRubricAction(Request $request, Rubric $rubric)
     {
@@ -160,7 +156,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/new_rubric", name="admin_blog_new_rubric")
      * @param Request $request
      * @return Response
      */
@@ -183,7 +178,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/blog/manage_comments/{id}", name="admin_article_manage_comments")
      * @param Article $article
      * @return Response
      */
@@ -196,7 +190,6 @@ class BlogController extends Controller
     }
 
     /**
-     * @Route("/admin/delete_comment", name="admin_blog_delete_comment", condition="request.isXmlHttpRequest()")
      * @param Request $request
      * @return JsonResponse
      * @throws \Twig_Error

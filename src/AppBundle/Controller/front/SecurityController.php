@@ -5,11 +5,8 @@ namespace AppBundle\Controller\Front;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserLoginType;
 use AppBundle\Form\UserRegistrationType;
-use AppBundle\Security\UserLoginAuthenticator;
 use AppBundle\Service\UserManager;
 use AppBundle\Utils\SecurityUtils;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\TwigBundle\TwigEngine;
@@ -70,7 +67,7 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/login", name="front_login")
+     * @return Response
      */
     public function loginAction()
     {
@@ -83,17 +80,13 @@ class SecurityController extends Controller
             'loginForm' => $form->createView()
         ]);
     }
-
-    /**
-     * @Route("/logout", name="front_logout")
-     */
+    
     public function logoutAction()
     {   
 
     }
 
     /**
-     * @Route("/registration", name="front_register")
      * @param Request $request
      * @return Response
      */

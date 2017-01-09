@@ -10,11 +10,8 @@ namespace AppBundle\Service;
 
 use AppBundle\Entity\Article;
 use AppBundle\Entity\Comment;
-use AppBundle\Entity\User;
 use AppBundle\Repository\CommentRepository;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\NoResultException;
 
 class CommentManager
 {

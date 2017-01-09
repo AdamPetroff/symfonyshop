@@ -8,19 +8,14 @@
 namespace AppBundle\Security;
 
 
-use AppBundle\Entity\User;
-use AppBundle\Form\AdminLoginType;
 use AppBundle\Form\UserLoginType;
 use AppBundle\Service\AdminManager;
 use AppBundle\Service\UserManager;
 use AppBundle\Utils\SecurityUtils;
 use Symfony\Component\Form\FormBuilder;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;

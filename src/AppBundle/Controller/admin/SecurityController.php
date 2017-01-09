@@ -7,7 +7,6 @@ use AppBundle\Form\AdminAccountType;
 use AppBundle\Form\AdminForgottenPassword;
 use AppBundle\Form\AdminLoginType;
 use AppBundle\Form\NewAdminType;
-use AppBundle\Security\AdminLoginAuthenticator;
 use AppBundle\Service\AdminManager;
 use AppBundle\Utils\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,7 +17,6 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends Controller
@@ -72,7 +70,6 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/login", name="admin_login")
      * @param Request $request
      * @return Response
      */
@@ -94,7 +91,6 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/forgotten_password", name="admin_forgotten_password")
      * @param Request $request
      * @return Response
      */
@@ -121,7 +117,6 @@ class SecurityController extends Controller
 
     /**
      * @return Response
-     * @Route("/admins", name="admin_admins")
      */
     public function adminsAction(){
         $admins = $this->adminManager->findAll();
@@ -135,7 +130,6 @@ class SecurityController extends Controller
      * @param Request $request
      * @param Admin $user
      * @return Response
-     * @Route("/admin_account/{id}", name="admin_account")
      */
     public function editAdminAction(Request $request, Admin $user)
     {
@@ -157,7 +151,6 @@ class SecurityController extends Controller
     /**
      * @param Request $request
      * @return Response
-     * @Route("/new_admin", name="admin_security_new_admin")
      */
     public function newAdminAction(Request $request)
     {

@@ -8,7 +8,6 @@
 namespace AppBundle\Controller\admin;
 
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +25,6 @@ class HomepageController extends Controller
     }
 
     /**
-     * @Route("/", name="admin_index")
      * @return Response
      */
     public function indexAction()

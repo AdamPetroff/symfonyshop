@@ -1,0 +1,68 @@
+admin_index:
+    path: /
+    condition: request.isXmlHttpRequest()
+    defaults:
+        _controller: AppBundle:admin/Homepage:index
+
+admin_blog_index:
+    path: /blog
+    defaults:
+        _controller: AppBundle:Admin/Blog:index
+
+admin_blog_edit_article:
+    path: /blog/article/{id}
+    defaults:
+        _controller: AppBundle:Admin/Blog:editArticle
+
+admin_blog_new_article:
+    path: /blog/new_article
+    defaults:
+        _controller: AppBundle:Admin/Blog:newArticle
+
+admin_blog_edit_rubric:
+    path: /blog/rubric/{id}
+    defaults:
+        _controller: AppBundle:Admin/Blog:editRubric
+
+admin_blog_new_rubric:
+    path: /blog/new_rubric
+    defaults:
+        _controller: AppBundle:Admin/Blog:newRubric
+
+admin_article_manage_comments:
+    path: /blog/manage_comments/{id}
+    defaults:
+        _controller: AppBundle:Admin/Blog:manageComments
+
+admin_blog_delete_comment:
+    path: /admin/delete_comment
+    condition: request.isXmlHttpRequest()
+    defaults:
+        _controller: AppBundle:Admin/Blog:deleteComment
+
+
+
+admin_login:
+    path: /login
+    defaults:
+        _controller: AppBundle:Admin/Security:login
+
+admin_forgotten_password:
+    path: /forgotten_password
+    defaults:
+        _controller: AppBundle:Admin/Security:forgottenPassword
+
+admin_admins:
+    path: /admins
+    defaults:
+        _controller: AppBundle:Admin/Security:admins
+
+admin_account:
+    path: /admin_account/{id}
+    defaults:
+        _controller: AppBundle:Admin/Security:editAdmin
+
+admin_security_new_admin:
+    path: /new_admin
+    defaults:
+        _controller: AppBundle:Admin/Security:newAdmin

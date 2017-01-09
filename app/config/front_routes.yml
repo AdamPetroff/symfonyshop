@@ -1,0 +1,52 @@
+front_homepage:
+    path: /
+    defaults:
+        _controller: AppBundle:front/Homepage:default
+
+
+
+front_display_article:
+    path: /article/{url}
+    defaults:
+        _controller: AppBundle:Front/Blog:displayArticle
+
+front_blog_post_comment:
+    path: /blog/post_comment
+    condition: request.isXmlHttpRequest()
+    defaults:
+        _controller: AppBundle:Front/Blog:displayArticle
+
+front_blog_vote_on_comment:
+    path: /vote_on_comment
+    condition: request.isXmlHttpRequest()
+    defaults:
+        _controller: AppBundle:Front/Blog:voteOnComment
+
+front_blog_index:
+    path: /blog/{url}
+    defaults:
+        _controller: AppBundle:Front/Blog:blog
+        url: ''
+
+front_blog_render_comment_form:
+    path: /render_comment_form/{parentId}
+    defaults:
+        _controller: AppBundle:Front/Blog:renderCommentForm
+        parentId: null
+
+
+
+front_login:
+    path: /login
+    defaults:
+        _controller: AppBundle:Front/Security:login
+
+front_register:
+    path: /registration
+    defaults:
+        _controller: AppBundle:Front/Security:register
+
+front_logout:
+    path: /logout
+    defaults:
+        _controller: AppBundle:Front/Security:logout

@@ -3,10 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Article;
-use AppBundle\Entity\Rubric;
 use Doctrine\ORM\EntityRepository;
-use Stringy\StaticStringy;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * ArticleRepository
