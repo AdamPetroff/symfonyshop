@@ -3,7 +3,6 @@
 parameters:
     admin_logout_target: /admin/login
 security:
-
     encoders:
         AppBundle\Entity\Admin: bcrypt
         AppBundle\Entity\User: bcrypt
@@ -19,6 +18,7 @@ security:
         user_provider:
             entity:
                 class: AppBundle:User
+                property: username
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -36,6 +36,11 @@ security:
                 path: /admin/logout
                 target: '%admin_logout_target%'
                 success_handler: admin_logout_success_handler
+            remember_me:
+                secret: %secret%
+                remember_me_parameter: admin_login[_remember_me]
+                lifetime: 604800
+                path: admin/
 
         user:
             pattern: ^/
@@ -47,6 +52,12 @@ security:
             logout:
                 path: /logout
                 target: /
+            remember_me:
+                name: REMEMBERMEFRONT
+                secret: "%secret%"
+                remember_me_parameter: user_login[_remember_me]
+                lifetime: 604800
+                path: /
 
     access_control:
         - { path: ^/admin/login, role: IS_AUTHENTICATED_ANONYMOUSLY }

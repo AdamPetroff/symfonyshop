@@ -8,6 +8,7 @@
 namespace AppBundle\Security;
 
 
+use AppBundle\Entity\Admin;
 use AppBundle\Form\AdminLoginType;
 use AppBundle\Service\AdminManager;
 use AppBundle\Utils\SecurityUtils;
@@ -45,7 +46,7 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param Request $request
      * @return array|null
      */
-    public function getCredentials(Request $request)
+    public function getCredentials(Request $request): ?array
     {
         $isLoginSubmit = $this->router->generate('admin_login', [],
                 RouterInterface::ABSOLUTE_URL) == $request->getUriForPath($request->getPathInfo()) && $request->getMethod() == 'POST';
@@ -65,7 +66,7 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param UserProviderInterface $userProvider
      * @return UserInterface
      */
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser($credentials, UserProviderInterface $userProvider): ?Admin
     {
         return $userProvider->loadUserByUsername($credentials['_username']);
     }
@@ -75,7 +76,7 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param UserInterface $user
      * @return bool
      */
-    public function checkCredentials($credentials, UserInterface $user)
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         $password = $credentials['_password'];
 
@@ -85,7 +86,7 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
     /**
      * @return string
      */
-    protected function getLoginUrl()
+    protected function getLoginUrl(): string
     {
         return $this->router->generate('admin_login');
     }
@@ -93,9 +94,14 @@ class AdminLoginAuthenticator extends AbstractFormLoginAuthenticator
     /**
      * @return string
      */
-    protected function getDefaultSuccessRedirectUrl()
+    protected function getDefaultSuccessRedirectUrl(): string
     {
         return $this->router->generate('admin_index');
+    }
+
+    public function supportsRememberMe()
+    {
+        return true;
     }
 
 }

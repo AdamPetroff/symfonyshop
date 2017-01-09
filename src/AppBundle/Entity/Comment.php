@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,44 +22,51 @@ class Comment
 
     /**
      * @ORM\Column(type="text")
+     * @var string
      */
     protected $text;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Article", inversedBy="comments")
+     * @var Article
      */
     protected $article;
 
     /**
      * @ORM\Column(type="string")
+     * @var string
      */
-    protected $posted_by;
+    protected $postedBy;
 
     /**
      * @ORM\Column(type="datetime")
+     * @var \DateTime
      */
-    protected $created_at;
+    protected $createdAt;
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\CommentVote", mappedBy="comment", cascade={"remove"})
+     * @var CommentVote[]
      */
     protected $votes;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comment", inversedBy="children")
+     * @var Comment
      */
     protected $parent;
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="parent", cascade={"remove"})
+     * @var Comment[]
      */
     protected $children;
     
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -66,67 +74,70 @@ class Comment
     /**
      * @return mixed
      */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->text;
     }
 
     /**
-     * @param mixed $text
+     * @param string $text
      */
-    public function setText($text)
+    public function setText(string $text) 
     {
         $this->text = $text;
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTime
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     /**
-     * @param mixed $created_at
+     * @param mixed $createdAt
      */
-    public function setCreatedAt($created_at)
+    public function setCreatedAt($createdAt)
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPostedBy()
+    public function getPostedBy(): ?string
     {
-        return $this->posted_by;
+        return $this->postedBy;
     }
 
     /**
-     * @param mixed $posted_by
+     * @param mixed $postedBy
      */
-    public function setPostedBy($posted_by)
+    public function setPostedBy($postedBy)
     {
-        $this->posted_by = $posted_by;
+        $this->postedBy = $postedBy;
     }
 
     /**
-     * @return CommentVote[]
+     * @return CommentVote[]|Collection
      */
-    public function getVotes()
+    public function getVotes(): ?Collection
     {
         return $this->votes;
     }
 
     /**
-     * @param mixed $votes
+     * @param CommentVote[] $votes
      */
-    public function setVotes($votes)
+    public function setVotes(array $votes)
     {
         $this->votes = $votes;
     }
 
+    /**
+     * @return int
+     */
     public function getVoting() : int
     {
         $voting = 0;
@@ -142,49 +153,49 @@ class Comment
     }
 
     /**
-     * @return mixed
+     * @return Article
      */
-    public function getArticle()
+    public function getArticle() : ?Article
     {
         return $this->article;
     }
 
     /**
-     * @param mixed $article
+     * @param Article $article
      */
-    public function setArticle($article)
+    public function setArticle(Article $article)
     {
         $this->article = $article;
     }
 
     /**
-     * @return mixed
+     * @return Comment
      */
-    public function getParent()
+    public function getParent(): ?Comment
     {
         return $this->parent;
     }
 
     /**
-     * @param mixed $parent
+     * @param Comment $parent
      */
-    public function setParent($parent)
+    public function setParent(Comment $parent)
     {
         $this->parent = $parent;
     }
 
     /**
-     * @return Comment[]
+     * @return Comment[]|Collection
      */
-    public function getChildren()
+    public function getChildren(): ?Collection
     {
         return $this->children;
     }
 
     /**
-     * @param mixed $children
+     * @param Collection $children
      */
-    public function setChildren($children)
+    public function setChildren(Collection $children)
     {
         $this->children = $children;
     }

@@ -46,7 +46,7 @@ class User implements \Serializable, UserInterface
      * @var array
      * @ORM\Column(type="array")
      */
-    protected $roles;
+    protected $roles = [];
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime")
@@ -99,54 +99,57 @@ class User implements \Serializable, UserInterface
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function serialize()
+    /**
+     * @return string
+     */
+    public function serialize(): string
     {
         return serialize(array(
             $this->id,

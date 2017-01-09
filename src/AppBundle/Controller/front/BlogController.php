@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Front;
 
 use AppBundle\Entity\Article;
 use AppBundle\Entity\Comment;
+use AppBundle\Entity\Rubric;
 use AppBundle\Entity\User;
 use AppBundle\Form\CommentType;
 use AppBundle\Service\ArticleManager;
@@ -110,7 +111,6 @@ class BlogController extends Controller
         $error = true;
         $form = $this->formFactory->create(CommentType::class);
         $form->handleRequest($request);
-
         $articleId = $request->request->get('article_id');
         if ($articleId) {
             $article = $this->articleManager->getArticle($articleId);
@@ -192,7 +192,7 @@ class BlogController extends Controller
     public function blogAction($url = '')
     {
         $rubric = $this->rubricManager->getRubricByUrl($url);
-        if (!$rubric) {
+        if (!$rubric || !$rubric->getActive()) {
             $rubric = $this->rubricManager->getRubric(1);
         }
         $articles = $rubric->getArticles();
@@ -203,7 +203,7 @@ class BlogController extends Controller
         ]);
     }
 
-    public function renderSidebarAction($selectedRubric)
+    public function renderSidebarAction(Rubric $selectedRubric = null)
     {
         $rubrics = $this->rubricManager->getBaseRubrics();
 

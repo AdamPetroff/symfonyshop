@@ -70,7 +70,7 @@ class Admin implements \Serializable, UserInterface
      * @var array
      * @ORM\Column(type="array")
      */
-    protected $roles;
+    protected $roles = [];
 
     public function __construct(){
         $this->setIsActive(true);
@@ -82,7 +82,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return integer
      */
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -92,7 +92,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @param string $username
      */
-    public function setUsername($username)
+    public function setUsername(string $username) 
     {
         $this->username = $username;
     }
@@ -102,7 +102,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return string
      */
-    public function getUsername()
+    public function getUsername() : ?string
     {
         return $this->username;
     }
@@ -112,7 +112,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @param string $password
      */
-    public function setPassword($password)
+    public function setPassword(string $password) 
     {
         $this->password = $password;
     }
@@ -122,7 +122,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return string
      */
-    public function getPassword()
+    public function getPassword() : ?string
     {
         return $this->password;
     }
@@ -132,7 +132,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail(string $email) 
     {
         $this->email = $email;
     }
@@ -142,7 +142,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail() : ?string
     {
         return $this->email;
     }
@@ -152,7 +152,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @param \DateTime $registrationDate
      */
-    public function setRegistrationDate($registrationDate)
+    public function setRegistrationDate(\DateTime $registrationDate) 
     {
         $this->registrationDate = $registrationDate;
     }
@@ -162,7 +162,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return \DateTime
      */
-    public function getRegistrationDate()
+    public function getRegistrationDate() : ?\DateTime
     {
         return $this->registrationDate;
     }
@@ -171,13 +171,10 @@ class Admin implements \Serializable, UserInterface
      * Set lastLogin
      *
      * @param \DateTime $lastLogin
-     * @return Admin
      */
-    public function setLastLogin($lastLogin)
+    public function setLastLogin(\DateTime $lastLogin) 
     {
         $this->lastLogin = $lastLogin;
-
-        return $this;
     }
 
     /**
@@ -185,7 +182,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return \DateTime
      */
-    public function getLastLogin()
+    public function getLastLogin() : ?\DateTime
     {
         return $this->lastLogin;
     }
@@ -194,13 +191,10 @@ class Admin implements \Serializable, UserInterface
      * Set isActive
      *
      * @param boolean $isActive
-     * @return Admin
      */
-    public function setIsActive($isActive)
+    public function setIsActive(bool $isActive) 
     {
         $this->isActive = $isActive;
-
-        return $this;
     }
 
     /**
@@ -208,7 +202,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return boolean
      */
-    public function getIsActive()
+    public function getIsActive() : bool
     {
         return $this->isActive;
     }
@@ -217,13 +211,10 @@ class Admin implements \Serializable, UserInterface
      * Set locked
      *
      * @param boolean $locked
-     * @return Admin
      */
-    public function setLocked($locked)
+    public function setLocked(bool $locked) 
     {
         $this->locked = $locked;
-
-        return $this;
     }
 
     /**
@@ -231,7 +222,7 @@ class Admin implements \Serializable, UserInterface
      *
      * @return boolean
      */
-    public function getLocked()
+    public function getLocked() : bool
     {
         return $this->locked;
     }
@@ -240,13 +231,10 @@ class Admin implements \Serializable, UserInterface
      * Set roles
      *
      * @param array $roles
-     * @return Admin
      */
-    public function setRoles($roles)
+    public function setRoles($roles) 
     {
         $this->roles = $roles;
-
-        return $this;
     }
 
     /**
@@ -254,17 +242,20 @@ class Admin implements \Serializable, UserInterface
      *
      * @return array
      */
-    public function getRoles()
+    public function getRoles() : array
     {
         return $this->roles;
     }
     
-    public function eraseCredentials()
+    public function eraseCredentials() 
     {
         
     }
 
-    public function serialize()
+    /**
+     * @return string
+     */
+    public function serialize() : string
     {
         return serialize(array(
             $this->id,
@@ -273,7 +264,10 @@ class Admin implements \Serializable, UserInterface
         ));
     }
 
-    public function unserialize($serialized)
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized) 
     {
         list (
             $this->id,
@@ -282,6 +276,9 @@ class Admin implements \Serializable, UserInterface
             ) = unserialize($serialized);
     }
 
+    /**
+     * @return null
+     */
     public function getSalt()
     {
         return null;
@@ -290,7 +287,7 @@ class Admin implements \Serializable, UserInterface
     /**
      * @ORM\PrePersist()
      */
-    public function prePersist()
+    public function prePersist() 
     {
         $this->setRegistrationDate(new \DateTime());
     }

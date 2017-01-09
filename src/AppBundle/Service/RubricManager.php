@@ -27,7 +27,7 @@ class RubricManager
      * @param string $url
      * @return Rubric
      */
-    public function getRubricByUrl(string $url)
+    public function getRubricByUrl(string $url): ?Rubric
     {
         $rubric = $this->repository->findOneBy(['url' => $url]);
 
@@ -38,7 +38,7 @@ class RubricManager
      * @param int $rubricId
      * @return Rubric
      */
-    public function getRubric(int $rubricId): Rubric
+    public function getRubric(int $rubricId): ?Rubric
     {
         return $this->repository->find($rubricId);
     }
@@ -46,7 +46,7 @@ class RubricManager
     /**
      * @return Rubric[]
      */
-    public function getBaseRubrics()
+    public function getBaseRubrics(): array
     {
         return $this->repository->findRubricsWithoutParent();
     }
@@ -62,14 +62,14 @@ class RubricManager
     /**
      * @return Rubric[]
      */
-    public function getRubricsList()
+    public function getRubricsList(): array
     {
         $baseRubrics = $this->getBaseRubrics();
         $array = [];
         $callback = function (Rubric $rubric, $callback) use (&$array) {
             foreach ($rubric->getChildren() as $child) {
-                if (!in_array($rubric, $array)) {
-                    $array[$rubric->getId()] = $rubric;
+                if (!in_array($child, $array)) {
+                    $array[$child->getId()] = $child;
                 }
                 $callback($child, $callback);
             }

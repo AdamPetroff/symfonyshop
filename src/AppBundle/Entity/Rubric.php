@@ -9,7 +9,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class Rubric
  * @package AppBundle\Entity
- * @ORM\Entity(repositoryClass="APpBundle\Repository\RubricRepository") @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity(repositoryClass="APpBundle\Repository\RubricRepository")
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="rubrics")
  */
 class Rubric
@@ -59,14 +60,6 @@ class Rubric
     protected $deleted;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(nullable=true)
-     * @Assert\Image()
-     */
-    protected $main_img;
-
-    /**
      * @var mixed
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Rubric", inversedBy="children")
@@ -74,7 +67,7 @@ class Rubric
     protected $parent;
 
     /**
-     * @var Collection
+     * @var Collection|Rubric[]
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Rubric", mappedBy="parent")
      */
@@ -114,7 +107,7 @@ class Rubric
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -123,14 +116,10 @@ class Rubric
      * Set name
      *
      * @param string $name
-     *
-     * @return Rubric
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -138,7 +127,7 @@ class Rubric
      *
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -147,14 +136,10 @@ class Rubric
      * Set description
      *
      * @param string $description
-     *
-     * @return Rubric
      */
-    public function setDescription($description)
+    public function setDescription(string $description) 
     {
         $this->description = $description;
-
-        return $this;
     }
 
     /**
@@ -162,7 +147,7 @@ class Rubric
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -171,14 +156,10 @@ class Rubric
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     *
-     * @return Rubric
      */
-    protected function setCreatedAt($createdAt)
+    protected function setCreatedAt(\DateTime $createdAt) 
     {
         $this->created_at = $createdAt;
-
-        return $this;
     }
 
     /**
@@ -186,7 +167,7 @@ class Rubric
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->created_at;
     }
@@ -195,14 +176,10 @@ class Rubric
      * Set deleted
      *
      * @param boolean $deleted
-     *
-     * @return Rubric
      */
-    public function setDeleted($deleted)
+    public function setDeleted(bool $deleted) 
     {
         $this->deleted = $deleted;
-
-        return $this;
     }
 
     /**
@@ -210,7 +187,7 @@ class Rubric
      *
      * @return boolean
      */
-    public function getDeleted()
+    public function getDeleted(): bool
     {
         return $this->deleted;
     }
@@ -219,14 +196,10 @@ class Rubric
      * Set specialAccess
      *
      * @param integer $specialAccess
-     *
-     * @return Rubric
      */
-    public function setSpecialAccess($specialAccess)
+    public function setSpecialAccess(int $specialAccess)
     {
         $this->special_access = $specialAccess;
-
-        return $this;
     }
 
     /**
@@ -234,7 +207,7 @@ class Rubric
      *
      * @return integer
      */
-    public function getSpecialAccess()
+    public function getSpecialAccess(): int
     {
         return $this->special_access;
     }
@@ -243,14 +216,10 @@ class Rubric
      * Set url
      *
      * @param string $url
-     *
-     * @return Rubric
      */
-    public function setUrl($url)
+    public function setUrl(string $url) 
     {
         $this->url = $url;
-
-        return $this;
     }
 
     /**
@@ -258,47 +227,19 @@ class Rubric
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
-    }
-
-    /**
-     * Set mainImg
-     *
-     * @param string $mainImg
-     *
-     * @return Rubric
-     */
-    public function setMainImg($mainImg)
-    {
-        $this->main_img = $mainImg;
-
-        return $this;
-    }
-
-    /**
-     * Get mainImg
-     *
-     * @return string
-     */
-    public function getMainImg()
-    {
-        return $this->main_img;
     }
 
     /**
      * Set parent
      *
      * @param array $parent
-     *
-     * @return Rubric
      */
-    public function setParent($parent)
+    public function setParent($parent) 
     {
         $this->parent = $parent;
-
-        return $this;
     }
 
     /**
@@ -306,7 +247,7 @@ class Rubric
      *
      * @return Rubric|null
      */
-    public function getParent()
+    public function getParent(): ?Rubric
     {
         return $this->parent;
     }
@@ -314,69 +255,46 @@ class Rubric
     /**
      * Set children
      *
-     * @param string $children
-     *
-     * @return Rubric
+     * @param array $children
      */
-    public function setChildren($children)
+    public function setChildren(array $children) 
     {
         $this->children = $children;
-
-        return $this;
     }
 
     /**
      * Get children
      *
-     * @return Collection
+     * @return Collection|Rubric[]
      */
-    public function getChildren()
+    public function getChildren(): ?Collection
     {
         return $this->children;
     }
 
     /**
-     * @return Collection
+     * @return Collection|null
      */
-    public function getNonDeletedChildren()
+    public function getNonDeletedChildren(): ?Collection
     {
-        return $this->children->filter(function(Rubric $rubric){
-            if($rubric->getDeleted()){
-                return false;
-            }
-            else return true;
-        });
-    }
-
-    /**
-     * Add child
-     *
-     * @param \AppBundle\Entity\Rubric $child
-     *
-     * @return Rubric
-     */
-    public function addChild(\AppBundle\Entity\Rubric $child)
-    {
-        $this->children[] = $child;
-
-        return $this;
-    }
-
-    /**
-     * Remove child
-     *
-     * @param \AppBundle\Entity\Rubric $child
-     */
-    public function removeChild(\AppBundle\Entity\Rubric $child)
-    {
-        $this->children->removeElement($child);
+        if(!empty($this->getChildren())) {
+            return $this->getChildren()->filter(function (Rubric $rubric) {
+                if ($rubric->getDeleted()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+        } else {
+            return null;
+        }
     }
 
     /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      */
-    public function beforeSaving()
+    public function beforeSaving() 
     {
         if(empty($this->getCreatedAt())){
             $this->setCreatedAt(new \DateTime());
@@ -384,53 +302,29 @@ class Rubric
     }
 
     /**
-     * Add article
-     *
-     * @param \AppBundle\Entity\Article $article
-     *
-     * @return Rubric
-     */
-    public function addArticle(\AppBundle\Entity\Article $article)
-    {
-        $this->articles[] = $article;
-
-        return $this;
-    }
-
-    /**
-     * Remove article
-     *
-     * @param \AppBundle\Entity\Article $article
-     */
-    public function removeArticle(\AppBundle\Entity\Article $article)
-    {
-        $this->articles->removeElement($article);
-    }
-
-    /**
      * Get articles
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
-    public function getArticles()
+    public function getArticles(): ?Collection
     {
-        return $this->articles->filter(function(Article $article){
-            return !$article->getDeleted();
-        });
+        if(!empty($this->articles)) {
+            return $this->articles->filter(function(Article $article){
+                return !$article->getDeleted();
+            });
+        } else {
+            return null;
+        }
     }
 
     /**
      * Set active
      *
      * @param boolean $active
-     *
-     * @return Rubric
      */
-    public function setActive($active)
+    public function setActive(bool $active) 
     {
         $this->active = $active;
-
-        return $this;
     }
 
     /**
@@ -438,7 +332,7 @@ class Rubric
      *
      * @return boolean
      */
-    public function getActive()
+    public function getActive(): bool
     {
         return $this->active;
     }

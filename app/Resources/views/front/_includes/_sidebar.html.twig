@@ -1,21 +1,23 @@
 {% macro recursion(rubrics, selectedRubric) %}
     <ul class="nav nav-stacked nav-pills">
         {% for rubric in rubrics %}
-            <li>
-                <div class="btn-group">
-                    <a {% if rubric == selectedRubric %}id="selected-rubric" class="btn btn-danger"{% else %}class="btn btn-default"{% endif %} href="{{ path('front_blog_index', {'url': rubric.url}) }}">{{ rubric.getName() }}</a>
-                    {% if rubric.children is not empty %}
-                        <button type="button" class="{% if rubric == selectedRubric %}btn btn-danger{% else %}btn btn-default{% endif %}" aria-expanded="true" data-toggle="collapse" data-target="#rubric-children-{{ rubric.id }}"><span class="caret"></span></button>
-                    {% endif %}
-                </div>
-            </li>
-
-            {% if rubric.children is not empty %}
+            {% if rubric.active %}
                 <li>
-                    <div class="collapse container-fluid" id="rubric-children-{{ rubric.id }}">
-                        {{ _self.recursion(rubric.children(), selectedRubric) }}
+                    <div class="btn-group">
+                        <a {% if rubric == selectedRubric %}id="selected-rubric" class="btn btn-danger"{% else %}class="btn btn-default"{% endif %} href="{{ path('front_blog_index', {'url': rubric.url}) }}">{{ rubric.getName() }}</a>
+                        {% if rubric.children is not empty %}
+                            <button type="button" class="{% if rubric == selectedRubric %}btn btn-danger{% else %}btn btn-default{% endif %}" aria-expanded="true" data-toggle="collapse" data-target="#rubric-children-{{ rubric.id }}"><span class="caret"></span></button>
+                        {% endif %}
                     </div>
                 </li>
+
+                {% if rubric.children is not empty %}
+                    <li>
+                        <div class="collapse container-fluid" id="rubric-children-{{ rubric.id }}">
+                            {{ _self.recursion(rubric.children(), selectedRubric) }}
+                        </div>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </ul>

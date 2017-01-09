@@ -43,7 +43,7 @@ class RubricRepository extends EntityRepository
      * @param Rubric $rubric
      * @return Rubric[]
      */
-    public function findNotUnderRubric(Rubric $rubric)
+    public function findNotUnderRubric(Rubric $rubric): array
     {
         $rubrics = $this->findProper();
         $count = count($rubrics);

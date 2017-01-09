@@ -35,11 +35,11 @@ class CommentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->setAction($this->router->getGenerator()->generate('front_blog_post_comment'))
             ->add('posted_by', TextType::class, ['label' => 'Your nickname'])
             ->add('text', TextareaType::class, ['label' => 'Comment'])
             ->add('parent', HiddenType::class)
-            ->add('submit', SubmitType::class);
+            ->add('submit', SubmitType::class)
+            ->setAction($this->router->getGenerator()->generate('front_blog_post_comment'));
 
         $builder->get('parent')->addModelTransformer(new CallbackTransformer(
             function (Comment $parent = null) {

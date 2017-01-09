@@ -44,7 +44,7 @@ class CommentRepository extends EntityRepository
             ->where('c.article = :article')
             ->setParameter('article', $article)
             ->andWhere('c.parent IS NULL')
-            ->orderBy("c.created_at", $orientation)
+            ->orderBy("c.createdAt", $orientation)
             ->getQuery()
             ->getResult();
     }

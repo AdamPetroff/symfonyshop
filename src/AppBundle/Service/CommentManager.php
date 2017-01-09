@@ -58,7 +58,7 @@ class CommentManager
      * @param int $commentId
      * @return Comment
      */
-    public function getComment(int $commentId) : Comment
+    public function getComment(int $commentId) : ?Comment
     {
         $comment = $this->repository->find($commentId);
 
@@ -69,10 +69,10 @@ class CommentManager
     }
 
     /**
-     * @param $article
+     * @param Article $article
      * @return array
      */
-    public function findArticleBaseCommentsOrderedByDate($article) : array
+    public function findArticleBaseCommentsOrderedByDate(Article $article) : array
     {
         $result = $this->repository->findArticleBaseCommentsOrderedByDate($article);
         return $result;

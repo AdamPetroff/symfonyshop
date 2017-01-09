@@ -26,7 +26,7 @@ class LogoutHandler implements LogoutSuccessHandlerInterface
      * @param Request $request
      * @return RedirectResponse
      */
-    public function onLogoutSuccess(Request $request)
+    public function onLogoutSuccess(Request $request): RedirectResponse
     {
         $this->router->generate('admin_login');
 

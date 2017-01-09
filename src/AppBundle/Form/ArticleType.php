@@ -39,7 +39,6 @@ class ArticleType extends AbstractType
                     'uiColor' => '#ffffff',
                 ]
             ])
-            ->add('news')
             ->add('rubric', EntityType::class, [
                 'class' => Rubric::class,
                 'multiple' => false,

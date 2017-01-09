@@ -9,7 +9,6 @@
 namespace AppBundle\Controller\front;
 
 
-use AppBundle\Entity\Admin;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\Response;

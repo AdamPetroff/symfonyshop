@@ -27,7 +27,7 @@ class SecurityUtils
     /**
      * @return string
      */
-    public function getLastAdminUsername()
+    public function getLastAdminUsername(): ?string
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request->attributes->has(self::LAST_ADMIN_USERNAME)) {
@@ -41,7 +41,7 @@ class SecurityUtils
     /**
      * @return string
      */
-    public function getLastUserUsername()
+    public function getLastUserUsername(): ?string
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request->attributes->has(self::LAST_USER_USERNAME)) {

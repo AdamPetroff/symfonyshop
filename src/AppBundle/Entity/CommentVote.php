@@ -46,7 +46,7 @@ class CommentVote
     /**
      * @return Comment
      */
-    public function getComment()
+    public function getComment(): ?Comment
     {
         return $this->comment;
     }
@@ -54,7 +54,7 @@ class CommentVote
     /**
      * @param Comment $comment
      */
-    public function setComment(Comment $comment)
+    public function setComment(Comment $comment) 
     {
         $this->comment = $comment;
     }
@@ -76,9 +76,9 @@ class CommentVote
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -86,7 +86,7 @@ class CommentVote
     /**
      * @return User
      */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -94,7 +94,7 @@ class CommentVote
     /**
      * @return boolean
      */
-    public function getReaction()
+    public function getReaction() : ?bool
     {
         return $this->reaction;
     }

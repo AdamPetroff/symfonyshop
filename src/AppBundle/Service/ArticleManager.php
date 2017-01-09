@@ -65,6 +65,9 @@ class ArticleManager
         }
     }
 
+    /**
+     * @param Article $entity
+     */
     public function saveMainImageFile(Article $entity)
     {
         if ($entity->getTmpMainImgFile() instanceof UploadedFile) {

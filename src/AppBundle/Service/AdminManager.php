@@ -40,7 +40,7 @@ class AdminManager
      * @param string $username
      * @return Admin
      */
-    public function findByUsername(string $username)
+    public function findByUsername(string $username): ?Admin
     {
         return $this->repository->findOneBy(['username' => $username]);
     }
@@ -50,7 +50,7 @@ class AdminManager
      * @param string $enteredPassword
      * @return bool
      */
-    public function checkPassword(UserInterface $admin, string $enteredPassword)
+    public function checkPassword(UserInterface $admin, string $enteredPassword): bool
     {
         return $this->encoder->isPasswordValid($admin, $enteredPassword);
     }
@@ -71,7 +71,7 @@ class AdminManager
     /**
      * @return Admin[]|array
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->repository->findAll();
     }

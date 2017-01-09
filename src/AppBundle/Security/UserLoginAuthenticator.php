@@ -48,7 +48,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param Request $request
      * @return array|null
      */
-    public function getCredentials(Request $request)
+    public function getCredentials(Request $request): ?array
     {
         $isLoginSubmit = $this->router->generate(
                 'front_login', 
@@ -70,7 +70,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param UserProviderInterface $userProvider
      * @return User
      */
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser($credentials, UserProviderInterface $userProvider): ?User
     {
         return $this->userManager->findByUsername($credentials['_username']);
     }
@@ -80,7 +80,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param UserInterface $user
      * @return bool
      */
-    public function checkCredentials($credentials, UserInterface $user)
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         $password = $credentials['_password'];
 
@@ -90,7 +90,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
     /**
      * @return string
      */
-    protected function getLoginUrl()
+    protected function getLoginUrl(): string
     {
         return $this->router->generate('front_login');
     }
@@ -98,9 +98,15 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
     /**
      * @return string
      */
-    protected function getDefaultSuccessRedirectUrl()
+    protected function getDefaultSuccessRedirectUrl(): string
     {
         return $this->router->generate('front_homepage');
     }
+
+    public function supportsRememberMe()
+    {
+        return true;
+    }
+
 
 }

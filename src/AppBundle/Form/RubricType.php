@@ -32,7 +32,6 @@ class RubricType extends AbstractType
             ->add('url', TextType::class, ['label' => 'Seo name', 'required' => false])
             ->add('description')
             ->add('active')
-            ->add('main_img', FileType::class, ['required' => false])
             ->add('parent', EntityType::class, [
                 'required' => false,
                 'class' => Rubric::class,

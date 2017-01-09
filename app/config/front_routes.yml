@@ -12,9 +12,8 @@ front_display_article:
 
 front_blog_post_comment:
     path: /blog/post_comment
-    condition: request.isXmlHttpRequest()
     defaults:
-        _controller: AppBundle:Front/Blog:displayArticle
+        _controller: AppBundle:Front/Blog:postComment
 
 front_blog_vote_on_comment:
     path: /vote_on_comment

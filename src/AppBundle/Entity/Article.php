@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Repository\ArticleRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Stringy\StaticStringy;
@@ -74,13 +75,6 @@ class Article
      *
      * @ORM\Column(type="boolean")
      */
-    protected $news;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
     protected $deleted;
 
     /**
@@ -95,7 +89,7 @@ class Article
      *
      * @ORM\Column(type="array")
      */
-    protected $images;
+    protected $images = [];
 
     /**
      * @var mixed
@@ -119,7 +113,6 @@ class Article
     public function __construct()
     {
         $this->setDeleted(false);
-        $this->setNews(true);
         $this->setDisplay(true);
     }
 
@@ -128,7 +121,7 @@ class Article
      *
      * @return integer
      */
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -137,14 +130,10 @@ class Article
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     *
-     * @return Article
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt($createdAt) 
     {
         $this->created_at = $createdAt;
-        
-        return $this;
     }
 
     /**
@@ -152,7 +141,7 @@ class Article
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt() : ?\DateTime
     {
         return $this->created_at;
     }
@@ -161,14 +150,10 @@ class Article
      * Set perex
      *
      * @param string $perex
-     *
-     * @return Article
      */
-    public function setPerex($perex)
+    public function setPerex($perex) 
     {
         $this->perex = $perex;
-
-        return $this;
     }
 
     /**
@@ -176,7 +161,7 @@ class Article
      *
      * @return string
      */
-    public function getPerex()
+    public function getPerex() : ?string
     {
         return $this->perex;
     }
@@ -185,14 +170,10 @@ class Article
      * Set text
      *
      * @param string $text
-     *
-     * @return Article
      */
-    public function setText($text)
+    public function setText($text) 
     {
         $this->text = $text;
-
-        return $this;
     }
 
     /**
@@ -200,7 +181,7 @@ class Article
      *
      * @return string
      */
-    public function getText()
+    public function getText() : ?string
     {
         return $this->text;
     }
@@ -209,14 +190,10 @@ class Article
      * Set name
      *
      * @param string $name
-     *
-     * @return Article
      */
-    public function setName($name)
+    public function setName($name) 
     {
         $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -224,7 +201,7 @@ class Article
      *
      * @return string
      */
-    public function getName()
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -233,14 +210,10 @@ class Article
      * Set url
      *
      * @param string $url
-     *
-     * @return Article
      */
-    public function setUrl($url)
+    public function setUrl($url) 
     {
         $this->url = $url;
-
-        return $this;
     }
 
     /**
@@ -248,47 +221,19 @@ class Article
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl() : ?string
     {
         return $this->url;
-    }
-
-    /**
-     * Set news
-     *
-     * @param boolean $news
-     *
-     * @return Article
-     */
-    public function setNews($news)
-    {
-        $this->news = $news;
-
-        return $this;
-    }
-
-    /**
-     * Get news
-     *
-     * @return boolean
-     */
-    public function getNews()
-    {
-        return $this->news;
     }
 
     /**
      * Set deleted
      *
      * @param boolean $deleted
-     *
-     * @return Article
      */
-    public function setDeleted($deleted)
+    public function setDeleted($deleted) 
     {
         $this->deleted = $deleted;
-
-        return $this;
     }
 
     /**
@@ -296,7 +241,7 @@ class Article
      *
      * @return boolean
      */
-    public function getDeleted()
+    public function getDeleted() : bool
     {
         return $this->deleted;
     }
@@ -305,14 +250,10 @@ class Article
      * Set mainImg
      *
      * @param string $mainImg
-     *
-     * @return Article
      */
-    public function setMainImg($mainImg)
+    public function setMainImg($mainImg) 
     {
         $this->main_img = $mainImg;
-
-        return $this;
     }
 
     /**
@@ -320,7 +261,7 @@ class Article
      *
      * @return string
      */
-    public function getMainImg()
+    public function getMainImg() : ?string
     {
         return $this->main_img;
     }
@@ -329,14 +270,10 @@ class Article
      * Set images
      *
      * @param array $images
-     *
-     * @return Article
      */
-    public function setImages($images)
+    public function setImages($images) 
     {
         $this->images = $images;
-
-        return $this;
     }
 
     /**
@@ -344,7 +281,7 @@ class Article
      *
      * @return array
      */
-    public function getImages()
+    public function getImages() : array
     {
         return $this->images;
     }
@@ -353,14 +290,10 @@ class Article
      * Set display
      *
      * @param boolean $display
-     *
-     * @return Article
      */
-    public function setDisplay($display)
+    public function setDisplay($display) 
     {
         $this->display = $display;
-
-        return $this;
     }
 
     /**
@@ -368,22 +301,31 @@ class Article
      *
      * @return boolean
      */
-    public function getDisplay()
+    public function getDisplay() : bool
     {
         return $this->display;
     }
 
-    public function getImageDir()
+    /**
+     * @return null|string
+     */
+    public function getImageDir() : ?string
     {
         return $this->getId() ? '/assets/images/articles/' . $this->getId() . '/' : null;
     }
 
-    public function isMainImg()
+    /**
+     * @return bool
+     */
+    public function isMainImg() : bool
     {
         return $this->getMainImg() && file_exists(WEB_DIR . $this->getImageDir() . $this->getMainImg());
     }
 
-    public function getMainImagePath()
+    /**
+     * @return null|string
+     */
+    public function getMainImagePath() : ?string
     {
         return !empty($this->getMainImg()) && !($this->getMainImg() instanceof UploadedFile && $this->isMainImg()) ? $this->getImageDir() . $this->getMainImg() : null;
     }
@@ -392,30 +334,26 @@ class Article
      * Set rubric
      *
      * @param \AppBundle\Entity\Rubric|int $rubric
-     *
-     * @return Article
      */
-    public function setRubric($rubric = null)
+    public function setRubric($rubric = null) 
     {
         $this->rubric = $rubric;
-
-        return $this;
     }
 
     /**
      * Get rubric
      *
-     * @return \AppBundle\Entity\Rubric
+     * @return Rubric
      */
-    public function getRubric()
+    public function getRubric() : ?Rubric
     {
         return $this->rubric;
     }
 
     /**
-     * @return mixed
+     * @return Comment[]|Collection
      */
-    public function getComments()
+    public function getComments() : Collection
     {
         return $this->comments;
     }
@@ -424,7 +362,7 @@ class Article
      * @ORM\PreUpdate
      * @param PreUpdateEventArgs $event
      */
-    public function preUpdate(PreUpdateEventArgs $event)
+    public function preUpdate(PreUpdateEventArgs $event) 
     {
         if($event->hasChangedField('perex') && strlen($this->getPerex()) > 200){
             $this->setPerex(substr($this->getPerex(), 0, 200) . '...');
@@ -434,7 +372,7 @@ class Article
     /**
      * @ORM\PrePersist()
      */
-    public function prePersist()
+    public function prePersist() 
     {
         $this->setCreatedAt(new \DateTime());
 
@@ -451,7 +389,7 @@ class Article
     /**
      * @return UploadedFile
      */
-    public function getTmpMainImgFile()
+    public function getTmpMainImgFile() : ?UploadedFile
     {
         return $this->tmpMainImgFile;
     }
@@ -459,7 +397,7 @@ class Article
     /**
      * @param UploadedFile $tmpMainImgFile
      */
-    public function setTmpMainImgFile($tmpMainImgFile)
+    public function setTmpMainImgFile($tmpMainImgFile) 
     {
         $this->tmpMainImgFile = $tmpMainImgFile;
     }
